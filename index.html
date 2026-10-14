@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HouseHunt Kenya - Find Your Dream Home</title>
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png">
+<meta name="description" content="Find your ideal home faster in Kenya. Quality houses matching your budget, location, and preferences.">
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --card-hover: #fafafa;
+    --accent: #1a6b3c;
+    --accent-dark: #14532d;
+    --accent-light: #e8f5e9;
+    --text: #111827;
+    --text-strong: #000000;
+    --muted: #6b7280;
+    --muted-light: #9ca3af;
+    --border: #e5e7eb;
+    --border-dark: #d1d5db;
+    --err: #ef4444;
+    --warn: #f59e0b;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --danger: #dc2626;
+    --danger-bg: #fee2e2;
+    --teal: #14b8a6;
+    --price: #f97316;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 24px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding-bottom: 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 12px; }header {
+  background: #ffffff;
+  padding: 12px 0;
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.header-inner {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+.logo { display: flex; align-items: center; gap: 8px; font-weight: 800; }
+.logo img { height: 38px; width: 38px; border-radius: 50%; object-fit: cover; background: white; }
+.logo .logo-text { display: flex; flex-direction: column; line-height: 1.15; }
+.logo .logo-text .main { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; color: var(--text); }
+.logo .logo-text .main span { color: var(--accent); }
+.logo .logo-text .sub { font-size: 9px; color: var(--muted); font-weight: 600; letter-spacing: 0.4px; }
+
+.btn {
+  padding: 9px 14px; border-radius: 8px; border: none;
+  font-weight: 700; font-size: 12px; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-dark); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-outline {
+  background: white; color: var(--text);
+  border: 1px solid var(--border-dark);
+}
+.btn-outline:hover { background: var(--bg); }
+
+.hero { padding: 28px 0 12px; text-align: center; }
+.hero h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.7px; line-height: 1.15; color: var(--text); }
+.hero h1 span { color: var(--accent); }
+.hero p { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+
+.search-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.near-me-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: white;
+  font-size: 14.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+  box-shadow: var(--shadow-md);
+}
+.near-me-btn:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+.near-me-btn.active {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+.near-me-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}.trust-strip {
+  display: flex; gap: 6px; padding: 14px 0 4px;
+  overflow-x: auto; scrollbar-width: none;
+  justify-content: center; flex-wrap: nowrap;
+}
+.trust-strip::-webkit-scrollbar { display: none; }
+.trust-pill {
+  flex-shrink: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 11px; color: var(--text);
+  font-weight: 700; display: inline-flex; align-items: center; gap: 4px;
+  box-shadow: var(--shadow-sm);
+}
+.trust-pill span:first-child { color: var(--success); }
+
+.filters {
+  display: flex; gap: 8px; overflow-x: auto; padding: 14px 0 8px;
+  scrollbar-width: none;
+}
+.filters::-webkit-scrollbar { display: none; }
+.chip {
+  padding: 8px 14px; border-radius: 20px; white-space: nowrap;
+  background: white; border: 1px solid var(--border-dark);
+  color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.section-title {
+  display: flex; justify-content: space-between; align-items: center;
+  margin: 24px 0 12px;
+}
+.section-title h2 {
+  font-size: 18px; font-weight: 800; letter-spacing: -0.3px;
+  color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title h2 .emoji { font-size: 20px; }
+.section-title span { color: var(--muted); font-size: 12px; font-weight: 600; }
+.section-title a {
+  color: var(--accent); font-size: 12.5px; font-weight: 700;
+  text-decoration: none; display: flex; align-items: center; gap: 4px;
+  padding: 6px 12px; border-radius: 20px; background: white;
+  border: 1px solid var(--border); transition: all 0.2s;
+}
+.section-title a:hover { border-color: var(--accent); color: var(--accent-dark); }
+.section-title .view-all-btn {
+  color: var(--text); font-size: 12.5px; font-weight: 700;
+  text-decoration: none; display: flex; align-items: center; gap: 4px;
+  padding: 8px 14px; border-radius: 20px; background: white;
+  border: 1px solid var(--border-dark);
+}
+
+.verified-agents-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--success-bg);
+  border: 1px solid rgba(21,128,61,0.15);
+  border-radius: 10px; padding: 8px 14px;
+  font-size: 11.5px; color: var(--success);
+  font-weight: 800; margin: 8px 0 4px;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.verified-agents-badge .dot {
+  width: 6px; height: 6px; background: var(--success);
+  border-radius: 50%; animation: verifiedPulse 1.8s ease-in-out infinite;
+}
+@keyframes verifiedPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}.featured-grid, .grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+}
+.property-card {
+  background: var(--card); border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--border); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  cursor: pointer; display: flex; flex-direction: column; box-shadow: var(--shadow-sm);
+}
+.property-card:hover {
+  transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--accent);
+}
+.property-img-wrap {
+  position: relative; width: 100%; padding-top: 75%; overflow: hidden; background: var(--border);
+}
+.property-img {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;
+}
+.property-card:hover .property-img { transform: scale(1.05); }
+
+.video-play-overlay {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 3; pointer-events: none; animation: playPulse 2s ease-in-out infinite;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.video-play-overlay::after {
+  content: ''; display: block; width: 0; height: 0;
+  border-left: 18px solid white; border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent; margin-left: 5px;
+}
+@keyframes playPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.click-to-watch-hint { display: none !important; }
+
+.badge-overlay {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(20, 184, 166, 0.95); color: white;
+  padding: 5px 10px; border-radius: 6px;
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.5px;
+  text-transform: uppercase; z-index: 2;
+}
+.badge-rent-overlay { background: rgba(20, 184, 166, 0.95); }
+.badge-sale-overlay { background: rgba(168, 85, 247, 0.95); }
+
+.badge-hot {
+  position: absolute; top: 10px; right: 10px;
+  background: linear-gradient(135deg, #ef4444, #dc2626); color: white;
+  padding: 4px 8px; border-radius: 6px;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.4px;
+  z-index: 2; box-shadow: 0 2px 6px rgba(239,68,68,0.3);
+}
+
+.badge-video {
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);
+  color: white; padding: 4px 9px; border-radius: 6px;
+  font-size: 9.5px; font-weight: 800; z-index: 2;
+  display: flex; align-items: center; gap: 3px;
+}
+
+.badge-near-you {
+  position: absolute; top: 10px; left: 10px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;
+  padding: 5px 10px; border-radius: 6px;
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.4px;
+  z-index: 3; display: flex; align-items: center; gap: 3px;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+}
+
+.badge-status {
+  position: absolute; bottom: 10px; left: 10px;
+  padding: 4px 10px; border-radius: 6px;
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.4px;
+  text-transform: uppercase; z-index: 3;
+}
+.badge-status.available {
+  background: var(--success-bg); color: var(--success);
+  border: 1px solid rgba(21,128,61,0.2);
+}
+.badge-status.rented {
+  background: var(--danger-bg); color: var(--danger);
+  border: 1px solid rgba(220,38,38,0.2);
+}
+
+.badge-status.available { display: none !important; }.property-info {
+  padding: 12px 12px 14px; display: flex; flex-direction: column; flex: 1;
+}
+.property-price {
+  color: var(--price); font-weight: 800; font-size: 16px;
+  margin-bottom: 4px; letter-spacing: -0.3px;
+}
+.property-price .per {
+  font-size: 10px; color: var(--muted); font-weight: 600; margin-left: 3px;
+}
+.property-title {
+  font-weight: 700; font-size: 13px; margin-bottom: 5px;
+  line-height: 1.35; color: var(--text);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; min-height: 35px;
+}
+.property-loc {
+  color: var(--muted); font-size: 11px; display: flex; align-items: center;
+  gap: 4px; margin-bottom: 10px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.property-loc .pin { color: var(--accent); }
+.property-specs {
+  display: flex; gap: 10px; padding-top: 10px; margin-top: auto;
+  border-top: 1px solid var(--border); color: var(--text);
+  font-size: 11.5px; font-weight: 700;
+}
+.property-specs span { display: flex; align-items: center; gap: 4px; }
+.property-specs .dim { color: var(--muted); font-weight: 500; }
+
+.loader {
+  text-align: center; padding: 60px 20px; color: var(--muted); grid-column: 1/-1;
+}
+.spinner {
+  width: 30px; height: 30px; border: 3px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty {
+  text-align: center; padding: 60px 20px; color: var(--muted); grid-column: 1/-1;
+}
+.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+
+.slide-wrapper { position: relative; margin: 0 -12px; padding: 0 12px; }
+.slide-track {
+  display: flex; gap: 12px; overflow-x: auto;
+  scroll-snap-type: x mandatory; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch; padding-bottom: 12px; padding-top: 4px;
+}
+.slide-track::-webkit-scrollbar { display: none; }
+
+.slide-card {
+  flex: 0 0 85%; max-width: 340px; scroll-snap-align: start;
+  scroll-snap-stop: always; background: var(--card);
+  border-radius: 18px; overflow: hidden; border: 1px solid var(--border);
+  box-shadow: var(--shadow-md); cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex; flex-direction: column; position: relative;
+}
+.slide-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.slide-card .property-img-wrap { padding-top: 70%; border-radius: 18px 18px 0 0; }
+.slide-card .property-img { border-radius: 18px 18px 0 0; }
+.slide-card .property-info { padding: 14px 16px 16px; }
+.slide-card .property-price { font-size: 18px; margin-bottom: 6px; }
+.slide-card .property-title { font-size: 15px; font-weight: 800; min-height: auto; margin-bottom: 8px; line-height: 1.3; }
+.slide-card .property-loc { font-size: 12px; margin-bottom: 12px; color: var(--muted); }
+.slide-card .property-specs { gap: 12px; font-size: 12.5px; padding-top: 12px; }
+
+.slide-heart {
+  position: absolute; top: 12px; right: 12px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(6px);
+  border: none; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; font-size: 16px; z-index: 5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: transform 0.2s;
+}
+.slide-heart:hover { transform: scale(1.1); }
+.slide-heart.active { color: var(--danger); }
+
+.slide-dots {
+  display: flex; justify-content: center; align-items: center;
+  gap: 6px; padding: 10px 0 4px;
+}
+.slide-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border-dark); transition: all 0.3s; cursor: pointer;
+}
+.slide-dot.active { background: var(--accent); width: 20px; border-radius: 3px; }.slide-arrow {
+  display: none; position: absolute; top: 40%; transform: translateY(-50%);
+  width: 40px; height: 40px; border-radius: 50%;
+  background: white; border: 1px solid var(--border-dark);
+  cursor: pointer; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--text); z-index: 10;
+  box-shadow: var(--shadow-md); transition: all 0.2s;
+}
+.slide-arrow:hover { background: var(--accent); color: white; border-color: var(--accent); }
+.slide-arrow.left { left: 8px; }
+.slide-arrow.right { right: 8px; }
+
+.near-you-section {
+  display: none; margin-top: 20px; padding: 16px;
+  background: linear-gradient(135deg, #eff6ff, #f0f9ff);
+  border: 1px solid rgba(59,130,246,0.2); border-radius: 16px;
+}
+.near-you-section.show { display: block; }
+.near-you-section .head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px; flex-wrap: wrap; gap: 8px;
+}
+.near-you-section .head h3 {
+  font-size: 15px; font-weight: 800; display: flex;
+  align-items: center; gap: 6px; color: var(--accent-dark);
+}
+.near-you-section .head .clear-btn {
+  background: white; border: 1px solid var(--border-dark);
+  color: var(--muted); font-size: 11px; font-weight: 700;
+  padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+}
+.near-you-section .head .clear-btn:hover { color: var(--danger); border-color: var(--danger); }
+.near-you-section .sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+
+.property-view {
+  position: fixed; inset: 0; background: var(--bg); z-index: 2000;
+  overflow-y: auto; transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex; flex-direction: column;
+}
+.property-view.show { transform: translateX(0); }
+
+.pv-topbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 14px; background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.pv-back {
+  background: white; border: 1px solid var(--border-dark);
+  color: var(--text); border-radius: 10px; padding: 9px 16px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+}
+.pv-back:hover { background: var(--bg); }
+.pv-actions { display: flex; gap: 8px; }
+.pv-icon-btn {
+  background: white; border: 1px solid var(--border-dark);
+  color: var(--text); width: 40px; height: 40px;
+  border-radius: 10px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; transition: all 0.2s;
+}
+.pv-icon-btn:hover { background: var(--bg); }
+.pv-icon-btn.active { color: var(--danger); border-color: var(--danger); background: var(--danger-bg); }
+
+.pv-hero { position: relative; width: 100%; background: #000; }
+.pv-hero-img { width: 100%; height: 320px; object-fit: cover; display: block; }
+.pv-badges { position: absolute; top: 12px; left: 12px; display: flex; gap: 8px; }
+.pv-badge {
+  background: white; padding: 6px 12px; border-radius: 8px;
+  font-size: 10.5px; font-weight: 800; letter-spacing: 0.5px;
+  text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.pv-badge.verified { color: var(--success); border: 1px solid var(--success-bg); }
+.pv-badge.type-rent { color: var(--teal); }
+.pv-badge.type-sale { color: #a855f7; }
+
+.pv-counter {
+  position: absolute; bottom: 12px; right: 12px;
+  background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px);
+  padding: 6px 12px; border-radius: 8px;
+  font-size: 12px; font-weight: 700; color: white;
+  display: flex; align-items: center; gap: 6px;
+}
+.pv-autoplay-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: rgba(255,255,255,0.25); overflow: hidden;
+}
+.pv-autoplay-fill {
+  height: 100%; width: 0%; background: var(--accent); transition: width 0.1s linear;
+}.pv-thumbs {
+  display: flex; gap: 8px; padding: 12px 14px;
+  overflow-x: auto; scrollbar-width: none;
+  background: white; border-bottom: 1px solid var(--border);
+}
+.pv-thumbs::-webkit-scrollbar { display: none; }
+.pv-thumb {
+  flex-shrink: 0; width: 64px; height: 64px;
+  border-radius: 10px; overflow: hidden;
+  border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s;
+}
+.pv-thumb.active { border-color: var(--accent); }
+.pv-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.pv-content { padding: 20px 14px 60px; max-width: 800px; margin: 0 auto; width: 100%; }
+.pv-price { font-size: 26px; font-weight: 800; color: var(--price); letter-spacing: -0.5px; }
+.pv-price .per { font-size: 13px; color: var(--muted); font-weight: 600; margin-left: 4px; }
+.pv-title { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; margin: 10px 0 8px; line-height: 1.25; color: var(--text); }
+.pv-loc { font-size: 14px; color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 5px; }
+.pv-loc .pin { color: var(--accent); }
+
+.pv-specs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
+.pv-spec { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px 8px; text-align: center; box-shadow: var(--shadow-sm); }
+.pv-spec .icon { font-size: 20px; margin-bottom: 6px; }
+.pv-spec .value { font-size: 16px; font-weight: 800; margin-bottom: 3px; color: var(--text); }
+.pv-spec .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+
+.pv-section-title { font-size: 13px; font-weight: 800; margin: 24px 0 12px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--muted); }
+.pv-desc { font-size: 14px; color: var(--text); line-height: 1.7; white-space: pre-line; }
+
+.pv-book-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-top: 26px; box-shadow: var(--shadow-sm); }
+.pv-book-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+.pv-book-card p { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+
+.pv-video-wrap { background: #000; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 12px; position: relative; }
+.pv-video-16x9 { position: relative; width: 100%; padding-top: 177.77%; background: #000; }
+.pv-video-16x9 iframe, .pv-video-16x9 video { position: absolute; inset: 0; width: 100%; height: 100%; border: none; background: #000; object-fit: cover; }
+.pv-video-vertical { position: relative; width: 100%; max-width: 100%; margin: 0 auto; aspect-ratio: 9/16; max-height: 620px; background: #000; }
+.pv-video-vertical iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; object-fit: cover; background: #000; }
+.pv-video-actions { text-align: center; margin-top: 8px; }
+.pv-video-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--accent); text-decoration: none; padding: 8px 16px; background: var(--accent-light); border: 1px solid rgba(59,130,246,0.3); border-radius: 20px; }
+.pv-video-fallback { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 32px 20px; text-align: center; box-shadow: var(--shadow-sm); }
+.pv-video-fallback .icon { font-size: 52px; margin-bottom: 12px; display: block; }
+.pv-video-fallback .title { font-size: 16px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+.pv-video-fallback .subtitle { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+.pv-video-fallback .watch-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: white; padding: 12px 22px; border-radius: 10px; font-size: 13.5px; font-weight: 800; text-decoration: none; box-shadow: 0 6px 20px rgba(59,130,246,0.35); }.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5);
+  display: none; align-items: center; justify-content: center;
+  padding: 16px; z-index: 3000; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: white; border-radius: 18px; padding: 24px;
+  max-width: 440px; width: 100%; border: 1px solid var(--border);
+  max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.modal h2 { font-size: 20px; margin-bottom: 8px; letter-spacing: -0.3px; color: var(--text); font-weight: 800; }
+.modal p { color: var(--muted); font-size: 13.5px; margin-bottom: 18px; line-height: 1.5; }
+
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 700; }
+.field input, .field select, .field textarea {
+  width: 100%; padding: 12px 14px; border-radius: 10px;
+  background: white; border: 1px solid var(--border-dark);
+  color: var(--text); font-size: 14px; outline: none; font-family: inherit; transition: border-color 0.2s;
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light);
+}
+.field textarea { min-height: 70px; resize: vertical; }
+
+.alert { padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 14px; display: none; line-height: 1.5; }
+.alert.err { background: var(--danger-bg); color: var(--danger); display: block; border: 1px solid rgba(220,38,38,0.25); }
+.alert.ok { background: var(--success-bg); color: var(--success); display: block; border: 1px solid rgba(21,128,61,0.25); }
+.alert.info { background: var(--accent-light); color: var(--accent-dark); display: block; border: 1px solid rgba(59,130,246,0.25); }
+
+.location-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px; z-index: 4000; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.location-modal-overlay.show { display: flex; }
+.location-modal {
+  background: white; border-radius: 20px; padding: 30px 24px;
+  max-width: 400px; width: 100%; border: 1px solid var(--border);
+  text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+  animation: modalPop 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.location-modal .icon-circle {
+  width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent-light), #eff6ff);
+  border: 2px solid rgba(59,130,246,0.3); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px; margin: 0 auto 20px; animation: locPulse 2s ease-in-out infinite;
+}
+@keyframes locPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(59,130,246,0); }
+}
+.location-modal h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.3px; color: var(--text); }
+.location-modal p { color: var(--muted); font-size: 13.5px; line-height: 1.6; margin-bottom: 24px; }
+.location-modal .btn-allow {
+  width: 100%; padding: 15px; border-radius: 12px; border: none;
+  background: var(--accent); color: white; font-size: 15px; font-weight: 800;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 8px; box-shadow: 0 6px 20px rgba(59,130,246,0.35); margin-bottom: 10px; transition: all 0.2s;
+}
+.location-modal .btn-allow:hover { background: var(--accent-dark); transform: translateY(-1px); }
+.location-modal .btn-not-now {
+  width: 100%; padding: 13px; border-radius: 12px;
+  border: 1px solid var(--border-dark); background: white;
+  color: var(--muted); font-size: 13.5px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.location-modal .btn-not-now:hover { background: var(--bg); color: var(--text); }  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: white; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around;
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+    z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.04);
+  }
+  .nav-item {
+    flex: 1; text-align: center; padding: 6px; cursor: pointer;
+    color: var(--muted); font-size: 10.5px; font-weight: 700;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-item.active { color: var(--accent); }
+  .nav-item:hover { color: var(--accent); }
+  .nav-item .nav-icon { font-size: 20px; }
+
+  .whatsapp-btn {
+    position: fixed; bottom: 90px; right: 16px; z-index: 99;
+    width: 54px; height: 54px; border-radius: 50%; background: #25D366;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 24px; box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    text-decoration: none; transition: transform 0.2s;
+  }
+  .whatsapp-btn:hover { transform: scale(1.1); }
+
+  @media (min-width: 640px) {
+    .container { padding: 0 16px; }
+    .grid, .featured-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .property-title { font-size: 13.5px; min-height: 37px; }
+    .property-price { font-size: 17px; }
+    .hero h1 { font-size: 32px; }
+    .hero p { font-size: 14px; }
+  }
+  @media (min-width: 768px) {
+    .hero h1 { font-size: 42px; }
+    .hero p { font-size: 15px; }
+    .bottom-nav { display: none; }
+    body { padding-bottom: 20px; }
+    .pv-hero-img { height: 440px; }
+    .pv-title { font-size: 26px; }
+    .pv-price { font-size: 30px; }
+  }
+  @media (min-width: 1024px) {
+    .grid, .featured-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+</head>
+<body><header>
+  <div class="container header-inner">
+    <div class="logo">
+      <img src="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png" alt="HouseHunt Kenya">
+      <div class="logo-text">
+        <div class="main">HouseHunt <span>Kenya</span></div>
+        <div class="sub">FINDING THE RIGHT HOME</div>
+      </div>
+    </div>
+    <button class="btn btn-outline" id="adminBtn" onclick="openAdminLogin()">Agent</button>
+  </div>
+</header>
+
+<section class="hero container">
+  <h1>Find Your <span>Dream Home</span> in Kenya</h1>
+  <p>Verified listings • Connect with agents and landlords directly</p>
+
+  <div class="search-panel">
+    <button class="near-me-btn" id="nearMeBtn" onclick="requestLocationAndFindNearby()">
+      📍 <span id="nearMeBtnText">Find Houses Near Me</span>
+    </button>
+  </div>
+</section>
+
+<section class="container">
+  <div class="trust-strip">
+    <div class="trust-pill"><span>✓</span> Verified</div>
+    <div class="trust-pill"><span>🔒</span> Secure</div>
+    <div class="trust-pill"><span>⚡</span> Instant</div>
+    <div class="trust-pill"><span>💬</span> 24/7</div>
+    <div class="trust-pill"><span>🏘️</span> 200+ Homes</div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="filters">
+    <button class="chip active" onclick="filterByType(this, '')">All</button>
+    <button class="chip" onclick="filterByType(this, 'rent')">For Rent</button>
+    <button class="chip" onclick="filterByType(this, 'sale')">For Sale</button>
+    <button class="chip" onclick="filterByType(this, '0')">Bedsitter</button>
+    <button class="chip" onclick="filterByType(this, '1')">1 Bed</button>
+    <button class="chip" onclick="filterByType(this, '2')">2 Bed</button>
+    <button class="chip" onclick="filterByType(this, '3')">3+ Bed</button>
+  </div>
+</div>
+
+<section class="container">
+  <div class="verified-agents-badge">
+    <span class="dot"></span>
+    <span>Verified Agents (20)</span>
+  </div>
+</section><section class="container">
+  <div class="section-title">
+    <h2><span class="emoji">🔥</span> Hot &amp; Trending</h2>
+    <a href="#allPropertiesSection" onclick="scrollToAll(event)">View All →</a>
+  </div>
+  <div class="slide-wrapper">
+    <button class="slide-arrow left" onclick="slideScroll('featuredSlideTrack', -1)" aria-label="Previous">‹</button>
+    <div class="slide-track" id="featuredSlideTrack">
+      <div class="loader">
+        <div class="spinner"></div>
+        <div>Loading featured...</div>
+      </div>
+    </div>
+    <button class="slide-arrow right" onclick="slideScroll('featuredSlideTrack', 1)" aria-label="Next">›</button>
+  </div>
+  <div class="slide-dots" id="featuredSlideDots"></div>
+</section>
+
+<section class="container">
+  <div class="near-you-section" id="nearYouSection">
+    <div class="head">
+      <h3>📍 Near You — Houses You Can Take</h3>
+      <button class="clear-btn" onclick="clearNearby()">✕ Clear</button>
+    </div>
+    <div class="sub">Houses matching your current location</div>
+    <div class="slide-wrapper">
+      <div class="slide-track" id="nearYouSlideTrack"></div>
+    </div>
+  </div>
+</section>
+
+<section class="container" id="allPropertiesSection">
+  <div class="section-title">
+    <h2>🏘️ Available Properties</h2>
+    <span id="propCount">Loading...</span>
+  </div>
+  <div id="propertiesGrid" class="grid">
+    <div class="loader">
+      <div class="spinner"></div>
+      <div>Loading properties...</div>
+    </div>
+  </div>
+</section>
+
+<section class="container" style="padding: 40px 14px 20px; text-align: center; border-top: 1px solid var(--border); margin-top: 40px;">
+  <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.8px; font-weight: 700; margin-bottom: 6px;">How It Works</div>
+  <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 24px; letter-spacing: -0.4px; color: var(--text);">Connect with Property Owners in 3 Steps</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; max-width: 900px; margin: 0 auto; text-align: left;">
+    <div style="background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow-sm);">
+      <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: white; margin-bottom: 12px;">1</div>
+      <div style="font-weight: 800; font-size: 15px; margin-bottom: 6px; color: var(--text);">🔍 Browse Properties</div>
+      <div style="color: var(--muted); font-size: 13px; line-height: 1.6;">Explore verified listings and find houses matching your budget and location.</div>
+    </div>
+    <div style="background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow-sm);">
+      <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: white; margin-bottom: 12px;">2</div>
+      <div style="font-weight: 800; font-size: 15px; margin-bottom: 6px; color: var(--text);">📞 Choose Your Contact</div>
+      <div style="color: var(--muted); font-size: 13px; line-height: 1.6;">Schedule a viewing with our agent OR speak directly to the landlord.</div>
+    </div>
+    <div style="background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow-sm);">
+      <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: white; margin-bottom: 12px;">3</div>
+      <div style="font-weight: 800; font-size: 15px; margin-bottom: 6px; color: var(--text);">🏠 Get a Call Back</div>
+      <div style="color: var(--muted); font-size: 13px; line-height: 1.6;">We'll connect you within 24 hours to arrange your viewing or move-in.</div>
+    </div>
+  </div>
+</section>
+
+<section class="container" style="padding: 40px 14px 20px; text-align: center; border-top: 1px solid var(--border); margin-top: 40px;">
+  <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.8px; font-weight: 700; margin-bottom: 6px;">Client Reviews</div>
+  <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.4px; color: var(--text);">What Our Clients Say</h2>
+  <p style="color: var(--muted); font-size: 13px; margin-bottom: 24px;">Real feedback from satisfied clients across Kenya</p>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; max-width: 1000px; margin: 0 auto; text-align: left;">
+    <div style="background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow-sm);">
+      <div style="color: #fbbf24; font-size: 14px; margin-bottom: 10px;">★★★★★</div>
+      <div style="font-size: 13.5px; color: var(--text); line-height: 1.7; margin-bottom: 14px;">"I found my dream 2-bedroom apartment in Kilimani within 3 days. The process was smooth and the agent was very professional."</div>
+      <div style="display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border);">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; color: white;">JM</div>
+        <div><div style="font-size: 12.5px; font-weight: 700; color: var(--text);">James M.</div><div style="font-size: 10.5px; color: var(--muted);">Kilimani, Nairobi ✓</div></div>
+      </div>
+    </div>
+    <div style="background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow-sm);">
+      <div style="color: #fbbf24; font-size: 14px; margin-bottom: 10px;">★★★★★</div>
+      <div style="font-size: 13.5px; color: var(--text); line-height: 1.7; margin-bottom: 14px;">"Very reliable service. I love that I could speak directly to the landlord. Managed to secure a 3-bedroom house in Lavington."</div>
+      <div style="display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border);">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; color: white;">MW</div>
+        <div><div style="font-size: 12.5px; font-weight: 700; color: var(--text);">Mary W.</div><div style="font-size: 10.5px; color: var(--muted);">Karen, Nairobi ✓</div></div>
+      </div>
+    </div>
+    <div style="background: white; border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow-sm);">
+      <div style="color: #fbbf24; font-size: 14px; margin-bottom: 10px;">★★★★★</div>
+      <div style="font-size: 13.5px; color: var(--text); line-height: 1.7; margin-bottom: 14px;">"Great experience! The agent called me within 10 minutes. I highly recommend this platform for anyone house-hunting in Kenya."</div>
+      <div style="display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border);">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; color: white;">PK</div>
+        <div><div style="font-size: 12.5px; font-weight: 700; color: var(--text);">Peter K.</div><div style="font-size: 10.5px; color: var(--muted);">Lavington, Nairobi ✓</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container" style="padding: 30px 14px 40px; text-align: center; border-top: 1px solid var(--border); margin-top: 40px;">
+  <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.8px; font-weight: 700; margin-bottom: 14px;">Trusted by Kenyans Across</div>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+    <div style="background: white; border: 1px solid var(--border); border-radius: 10px; padding: 9px 16px; font-size: 12px; font-weight: 700; color: var(--text);">📍 Nairobi</div>
+    <div style="background: white; border: 1px solid var(--border); border-radius: 10px; padding: 9px 16px; font-size: 12px; font-weight: 700; color: var(--text);">📍 Mombasa</div>
+    <div style="background: white; border: 1px solid var(--border); border-radius: 10px; padding: 9px 16px; font-size: 12px; font-weight: 700; color: var(--text);">📍 Nakuru</div>
+    <div style="background: white; border: 1px solid var(--border); border-radius: 10px; padding: 9px 16px; font-size: 12px; font-weight: 700; color: var(--text);">📍 Kiambu</div>
+    <div style="background: white; border: 1px solid var(--border); border-radius: 10px; padding: 9px 16px; font-size: 12px; font-weight: 700; color: var(--text);">📍 Thika</div>
+  </div>
+</section>
+
+<section class="container" style="padding: 30px 14px 100px; text-align: center; border-top: 1px solid var(--border); margin-top: 20px;">
+  <div style="font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; color: var(--text);">Delta Property Agency</div>
+  <p style="color: var(--muted); font-size: 12.5px; margin-bottom: 24px;">Trusted by Kenyans looking for quality homes</p>
+  <div style="display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; margin-bottom: 24px;">
+    <div><div style="font-size: 22px; font-weight: 800; color: var(--accent);">500+</div><div style="font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Viewings</div></div>
+    <div><div style="font-size: 22px; font-weight: 800; color: var(--accent);">100%</div><div style="font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Verified</div></div>
+    <div><div style="font-size: 22px; font-weight: 800; color: var(--accent);">4.9★</div><div style="font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Rating</div></div>
+    <div><div style="font-size: 22px; font-weight: 800; color: var(--accent);">24/7</div><div style="font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Support</div></div>
+  </div>
+  <div style="border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px;">
+    <div style="font-size: 11.5px; color: var(--muted); line-height: 1.9;">
+      📞 0738264143 &nbsp;•&nbsp; 📍 Nairobi, Kenya<br>
+      © 2026 Delta Property Agency. All rights reserved.
+    </div>
+  </div>
+</section><a href="https://wa.me/254738264143?text=Hi%20Delta%20Property%20Agency%2C%20I%20need%20help%20finding%20a%20house." 
+   class="whatsapp-btn" 
+   target="_blank"
+   rel="noopener">💬</a>
+
+<nav class="bottom-nav">
+  <div class="nav-item active" onclick="scrollToTop()">
+    <div class="nav-icon">🏠</div>
+    <div>Home</div>
+  </div>
+  <a href="/chat.html" class="nav-item" style="text-decoration:none;color:inherit;">
+    <div class="nav-icon">💬</div>
+    <div>Help</div>
+  </a>
+  <div class="nav-item" onclick="openTrackBooking()">
+    <div class="nav-icon">🔍</div>
+    <div>Track</div>
+  </div>
+  <div class="nav-item" onclick="openAdminLogin()">
+    <div class="nav-icon">⚙️</div>
+    <div>Profile</div>
+  </div>
+</nav>
+
+<div class="property-view" id="propertyView">
+  <div class="pv-topbar">
+    <button class="pv-back" onclick="closePropertyView()">← Back</button>
+    <div class="pv-actions">
+      <button class="pv-icon-btn" id="pvHeart" onclick="toggleHeart()">🤍</button>
+    </div>
+  </div>
+  
+  <div class="pv-hero">
+    <img id="pvHeroImg" class="pv-hero-img" src="" alt="Property">
+    <div class="pv-badges">
+      <span class="pv-badge verified">✓ Verified</span>
+      <span class="pv-badge type-rent" id="pvTypeBadge">FOR RENT</span>
+    </div>
+    <div class="pv-counter" id="pvCounter">📸 1 / 1</div>
+    <div class="pv-autoplay-bar">
+      <div class="pv-autoplay-fill" id="pvAutoplayFill"></div>
+    </div>
+  </div>
+  
+  <div class="pv-thumbs" id="pvThumbs"></div>
+  
+  <div class="pv-content">
+    <div class="pv-price" id="pvPrice">KES 0 <span class="per">/mo</span></div>
+    <div class="pv-title" id="pvTitle">Property Title</div>
+    <div class="pv-loc" id="pvLocation"><span class="pin">📍</span> Location</div>
+    
+    <div class="pv-specs">
+      <div class="pv-spec">
+        <div class="icon">🛏️</div>
+        <div class="value" id="pvBeds">0</div>
+        <div class="label">Bedrooms</div>
+      </div>
+      <div class="pv-spec">
+        <div class="icon">🚿</div>
+        <div class="value" id="pvBaths">0</div>
+        <div class="label">Bathrooms</div>
+      </div>
+      <div class="pv-spec">
+        <div class="icon">🏠</div>
+        <div class="value" id="pvTypeLabel">Rent</div>
+        <div class="label">Type</div>
+      </div>
+    </div>
+    
+    <div id="pvVideoSection" style="display:none; margin-top: 24px;">
+      <div class="pv-section-title">🎬 Video Tour</div>
+      <div id="pvVideoContainer"></div>
+      <div class="pv-video-actions" id="pvVideoActions"></div>
+    </div>
+    
+    <div class="pv-section-title">About this property</div>
+    <p class="pv-desc" id="pvDescription">Description</p>
+    
+    <div class="pv-book-card">
+      <h3>💬 Connect with the Property</h3>
+      <p>Choose how you want to proceed with this property.</p>
+
+      <button onclick="openViewingModal()" id="scheduleViewingBtn"
+        style="width:100%; padding:16px; font-size:14px; font-weight:800; letter-spacing:0.3px; background:linear-gradient(135deg, #1a6b3c, #14532d); color:white; border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 6px 20px rgba(26,107,60,0.35); margin-bottom:10px;">
+        <span style="font-size:18px;">📅</span>
+        <span>Schedule a Viewing</span>
+        <span style="font-size:16px;">→</span>
+      </button>
+
+      <div style="text-align:center; margin:10px 0; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:1px;">— OR —</div>
+
+      <button onclick="openLandlordModal()" id="speakLandlordBtn"
+        style="width:100%; padding:16px; font-size:14px; font-weight:800; letter-spacing:0.3px; background:white; color:#1a6b3c; border:2px solid #1a6b3c; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">
+        <span style="font-size:18px;">📞</span>
+        <span>Speak to Landlord Direct</span>
+        <span style="font-size:16px;">→</span>
+      </button>
+
+      <div style="margin-top:16px; padding:14px; background:var(--accent-light); border:1px solid rgba(26,107,60,0.25); border-radius:12px;">
+        <div style="font-size:12.5px; color:var(--accent-dark); line-height:1.7;">
+          ℹ️ <b>Schedule a Viewing</b> — Our agent will contact you to book your viewing appointment.<br>
+          📞 <b>Speak to Landlord Direct</b> — For tenants ready to move in soon.
+        </div>
+      </div>
+    </div>
+  </div>
+</div><div class="modal-overlay" id="viewingModal">
+  <div class="modal">
+    <h2>📅 Schedule a Viewing</h2>
+    <p>Our agent will contact you shortly to help you book your viewing appointment.</p>
+    <div class="alert err" id="viewingError"></div>
+    <div class="alert ok" id="viewingSuccess"></div>
+    <div id="viewingForm">
+      <div class="field">
+        <label>Full Name *</label>
+        <input type="text" id="viewingName" placeholder="e.g., John Mwangi">
+      </div>
+      <div class="field">
+        <label>Phone Number *</label>
+        <input type="tel" id="viewingPhone" placeholder="0712345678" inputmode="numeric" maxlength="10">
+      </div>
+      <div class="field">
+        <label>Preferred Viewing Date *</label>
+        <input type="date" id="viewingDate">
+      </div>
+      <div class="field">
+        <label>Preferred Time</label>
+        <select id="viewingTime">
+          <option value="">Any time</option>
+          <option value="Morning (8am - 12pm)">Morning (8am - 12pm)</option>
+          <option value="Afternoon (12pm - 4pm)">Afternoon (12pm - 4pm)</option>
+          <option value="Evening (4pm - 6pm)">Evening (4pm - 6pm)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Message (Optional)</label>
+        <textarea id="viewingMessage" placeholder="Any specific requests or questions..."></textarea>
+      </div>
+      <div style="background:var(--accent-light); padding:14px; border-radius:12px; margin-bottom:16px; font-size:12.5px; border:1px solid rgba(26,107,60,0.25);">
+        ℹ️ <b style="color:var(--accent-dark);">Viewing Appointment Details:</b><br>
+        <span style="color:var(--text); line-height:1.7;">
+          • Booking fee: <b>KES 1,000</b><br>
+          • You will be able to view up to <b>5 houses</b><br>
+          • Payment is handled directly with our agent<br>
+          • Our agent will explain the full process when they call you
+        </span>
+      </div>
+      <button class="btn btn-primary" style="width:100%;padding:15px; font-size:14px;" id="viewingSubmitBtn" onclick="submitViewingRequest()">📩 Request Viewing Appointment</button>
+      <button class="btn btn-outline" style="width:100%;margin-top:10px;padding:13px;" onclick="closeModal('viewingModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="landlordModal">
+  <div class="modal">
+    <h2>📞 Speak to Landlord Direct</h2>
+    <p>Connect directly with the property owner for immediate arrangements.</p>
+    <div class="alert err" id="landlordError"></div>
+    <div class="alert ok" id="landlordSuccess"></div>
+    <div id="landlordForm">
+      <div class="field">
+        <label>Full Name *</label>
+        <input type="text" id="landlordName" placeholder="e.g., Jane Wanjiku">
+      </div>
+      <div class="field">
+        <label>Phone Number *</label>
+        <input type="tel" id="landlordPhone" placeholder="0722334455" inputmode="numeric" maxlength="10">
+      </div>
+      <div class="field">
+        <label>When do you want to move in? *</label>
+        <select id="landlordMoveIn">
+          <option value="">Select...</option>
+          <option value="Immediately">Immediately (within 7 days)</option>
+          <option value="Within 2 weeks">Within 2 weeks</option>
+          <option value="Within a month">Within a month</option>
+          <option value="Within 2-3 months">Within 2-3 months</option>
+          <option value="Just inquiring">Just inquiring</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Message to Landlord (Optional)</label>
+        <textarea id="landlordMessage" placeholder="e.g., Ready to pay deposit today. Looking for a 1-year lease."></textarea>
+      </div>
+      <div style="background:#e8f5e9; padding:14px; border-radius:12px; margin-bottom:16px; font-size:12.5px; border:1px solid rgba(26,107,60,0.25);">
+        ℹ️ <b style="color:#1a6b3c;">Next Steps:</b><br>
+        <span style="color:var(--text); line-height:1.7;">
+          • The landlord will contact you shortly<br>
+          • Discuss move-in date and terms directly<br>
+          • Any payments will be handled between you and the landlord
+        </span>
+      </div>
+      <label style="display:flex; align-items:flex-start; gap:8px; padding:12px; background:var(--bg); border:1px solid var(--border); border-radius:10px; margin-bottom:14px; cursor:pointer;">
+        <input type="checkbox" id="landlordConfirm" style="width:auto; margin-top:2px;">
+        <span style="font-size:12px; color:var(--text); line-height:1.5;">I confirm I'm ready to discuss moving in within 30 days</span>
+      </label>
+      <button class="btn btn-primary" style="width:100%;padding:15px; font-size:14px; background:linear-gradient(135deg, #1a6b3c, #14532d);" id="landlordSubmitBtn" onclick="submitLandlordRequest()">📩 Send to Landlord</button>
+      <button class="btn btn-outline" style="width:100%;margin-top:10px;padding:13px;" onclick="closeModal('landlordModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="trackModal">
+  <div class="modal">
+    <h2>Track My Enquiry</h2>
+    <p>Enter your enquiry reference to check status</p>
+    <div class="alert err" id="trackError"></div>
+    <div class="field">
+      <label>Reference</label>
+      <input type="text" id="trackRef" placeholder="e.g., VR-2026-0001 or LL-2026-0001">
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:15px; font-size:14px;" onclick="trackEnquiry()">🔍 Track</button>
+    <button class="btn btn-outline" style="width:100%;margin-top:10px;padding:13px;" onclick="closeModal('trackModal')">Cancel</button>
+    <div id="trackResult" style="margin-top:16px;"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="adminModal">
+  <div class="modal">
+    <h2>Agent Login</h2>
+    <p>Sign in to manage properties and enquiries</p>
+    <div class="alert err" id="adminError"></div>
+    <div class="field">
+      <label>Email or Phone</label>
+      <input type="text" id="adminEmail" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="adminPassword" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:15px; font-size:14px;" onclick="adminLogin()">Sign In</button>
+    <button class="btn btn-outline" style="width:100%;margin-top:10px;padding:13px;" onclick="closeModal('adminModal')">Cancel</button>
+  </div>
+</div>
+
+<div class="location-modal-overlay" id="locationModal">
+  <div class="location-modal">
+    <div class="icon-circle">📍</div>
+    <h3>See Houses Near You</h3>
+    <p>Allow location access to see properties close to you. We never share your location with anyone.</p>
+    <button class="btn-allow" onclick="allowLocation()">
+      <span>✅</span><span>Allow Location</span>
+    </button>
+    <button class="btn-not-now" onclick="dismissLocation()">Not Now</button>
+  </div>
+</div>
+
+<script>const API_BASE = 'https://house-hunt-server.onrender.com';
+const LOGO_PLACEHOLDER = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=400&q=80';
+
+let state = {
+  token: localStorage.getItem('hh_token') || null,
+  user: JSON.parse(localStorage.getItem('hh_user') || 'null'),
+  properties: [],
+  featuredProperties: [],
+  nearbyProperties: [],
+  selectedProperty: null,
+  currentImageIndex: 0,
+  pollingInterval: null,
+  autoplayInterval: null,
+  refreshInterval: null,
+  savedFavorites: JSON.parse(localStorage.getItem('hh_favorites') || '[]'),
+  customerLocation: null,
+  nearbyActive: false,
+  activeChipFilter: { type: '', bedrooms: '' },
+  submittedProperties: JSON.parse(localStorage.getItem('hh_submitted') || '{}')
+};
+
+async function api(path, options = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
+  const res = await fetch(API_BASE + path, { ...options, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(data.error || 'Request failed');
+    err.response = data;
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+}
+
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function markPropertySubmitted(propertyId, reference, type) {
+  state.submittedProperties[propertyId + '_' + type] = { reference: reference, type: type, submitted_at: new Date().toISOString() };
+  localStorage.setItem('hh_submitted', JSON.stringify(state.submittedProperties));
+}
+
+function getPropertySubmission(propertyId, type) {
+  return state.submittedProperties[propertyId + '_' + type] || null;
+}
+
+function shuffleArray(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function shouldAskLocation() {
+  const dismissed = localStorage.getItem('hh_location_dismissed');
+  if (dismissed === 'true') return false;
+  if (state.customerLocation) return false;
+  return true;
+}
+
+function showLocationModal() { document.getElementById('locationModal').classList.add('show'); }
+
+function allowLocation() {
+  document.getElementById('locationModal').classList.remove('show');
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      state.customerLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+      localStorage.setItem('hh_location_allowed', 'true');
+      loadNearbyProperties();
+    },
+    () => { localStorage.setItem('hh_location_dismissed', 'true'); },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+  );
+}
+
+function dismissLocation() {
+  document.getElementById('locationModal').classList.remove('show');
+  localStorage.setItem('hh_location_dismissed', 'true');
+}
+
+function requestLocationAndFindNearby() {
+  const btn = document.getElementById('nearMeBtn');
+  const btnText = document.getElementById('nearMeBtnText');
+  if (state.nearbyActive) { clearNearby(); return; }
+  if (state.customerLocation) { loadNearbyProperties(); return; }
+  btnText.textContent = 'Getting location...';
+  btn.disabled = true;
+  if (!navigator.geolocation) {
+    btnText.textContent = 'Location not supported';
+    setTimeout(() => { btnText.textContent = 'Find Houses Near Me'; btn.disabled = false; }, 2000);
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      state.customerLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+      loadNearbyProperties();
+      btn.disabled = false;
+    },
+    () => {
+      btnText.textContent = 'Location unavailable';
+      setTimeout(() => { btnText.textContent = 'Find Houses Near Me'; btn.disabled = false; }, 2000);
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+  );
+}
+
+async function loadNearbyProperties() {
+  if (!state.customerLocation) return;
+  const btn = document.getElementById('nearMeBtn');
+  const btnText = document.getElementById('nearMeBtnText');
+  const section = document.getElementById('nearYouSection');
+  const track = document.getElementById('nearYouSlideTrack');
+  btnText.textContent = 'Loading...';
+  try {
+    const res = await api('/api/properties/nearby?lat=' + state.customerLocation.lat + '&lng=' + state.customerLocation.lng + '&limit=6');
+    const list = res.properties || [];
+    if (list.length === 0) {
+      section.classList.remove('show');
+      state.nearbyActive = false;
+      btn.classList.remove('active');
+      btnText.textContent = 'Find Houses Near Me';
+      return;
+    }
+    state.nearbyProperties = list;
+    state.nearbyActive = true;
+    btn.classList.add('active');
+    btnText.textContent = '✓ Showing Nearby Houses';
+    track.innerHTML = list.map(p => renderSlideCard(p, true)).join('');
+    section.classList.add('show');
+  } catch (e) {
+    section.classList.remove('show');
+    state.nearbyActive = false;
+    btn.classList.remove('active');
+    btnText.textContent = 'Find Houses Near Me';
+  }
+}
+
+function clearNearby() {
+  const section = document.getElementById('nearYouSection');
+  const btn = document.getElementById('nearMeBtn');
+  const btnText = document.getElementById('nearMeBtnText');
+  section.classList.remove('show');
+  state.nearbyActive = false;
+  state.nearbyProperties = [];
+  btn.classList.remove('active');
+  btnText.textContent = 'Find Houses Near Me';
+}
+
+function toggleFavorite(propertyId, btnEl) {
+  const idx = state.savedFavorites.indexOf(propertyId);
+  if (idx === -1) state.savedFavorites.push(propertyId);
+  else state.savedFavorites.splice(idx, 1);
+  localStorage.setItem('hh_favorites', JSON.stringify(state.savedFavorites));
+  const active = state.savedFavorites.includes(propertyId);
+  if (btnEl) {
+    btnEl.textContent = active ? '❤️' : '🤍';
+    btnEl.classList.toggle('active', active);
+  }
+}
+
+function scrollToAll(e) {
+  if (e) e.preventDefault();
+  const el = document.getElementById('allPropertiesSection');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+function renderSlideCard(p, isNearby = false) {
+  const img = (p.images && p.images[0] && !p.images[0].includes('via.placeholder.com')) ? p.images[0] : LOGO_PLACEHOLDER;
+  const typeLabel = p.type === 'sale' ? 'FOR SALE' : 'FOR RENT';
+  const typeClass = p.type === 'sale' ? 'badge-sale-overlay' : 'badge-rent-overlay';
+  const priceSuffix = p.type === 'rent' ? '<span class="per">/mo</span>' : '';
+  const isRented = p.status === 'rented';
+  const statusBadge = isRented ? '<span class="badge-status rented">● RENTED</span>' : '<span class="badge-status available">● AVAILABLE</span>';
+  const nearBadge = isNearby ? '<span class="badge-near-you">📍 Near You</span>' : '';
+  const playButton = p.tiktok_url ? '<div class="video-play-overlay"></div>' : '';
+  const videoBadge = p.tiktok_url ? '<span class="badge-video">▶ Video</span>' : '';
+  const heartActive = state.savedFavorites.includes(p.id);
+  const bedLabel = p.unitLabel || ((p.bedrooms === 0 || p.bedrooms === '0') ? 'Studio' : p.bedrooms + ' Bed');
+
+  return `
+    <div class="slide-card" onclick="openPropertyView('${p.id}')">
+      <div class="property-img-wrap">
+        <img class="property-img" src="${img}" alt="${escapeHtml(p.title)}" loading="lazy">
+        ${isNearby ? nearBadge : `<span class="badge-overlay ${typeClass}">${typeLabel}</span>`}
+        ${playButton}
+        ${videoBadge}
+        ${statusBadge}
+        <button class="slide-heart ${heartActive ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite('${p.id}', this)">${heartActive ? '❤️' : '🤍'}</button>
+      </div>
+      <div class="property-info">
+        <div class="property-price">Ksh ${Number(p.price).toLocaleString()}${priceSuffix}</div>
+        <div class="property-title">${escapeHtml(p.title)}</div>
+        <div class="property-loc"><span class="pin">📍</span> ${escapeHtml(p.location)}</div>
+        <div class="property-specs">
+          <span>🛏️ ${bedLabel}</span>
+          <span>🚿 ${p.bathrooms} Bath</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPropertyCard(p) {
+  const img = (p.images && p.images[0] && !p.images[0].includes('via.placeholder.com')) ? p.images[0] : LOGO_PLACEHOLDER;
+  const isNew = (new Date() - new Date(p.created_at)) < (7 * 24 * 60 * 60 * 1000);
+  const typeLabel = p.type === 'sale' ? 'FOR SALE' : 'FOR RENT';
+  const typeClass = p.type === 'sale' ? 'badge-sale-overlay' : 'badge-rent-overlay';
+  const priceSuffix = p.type === 'rent' ? '<span class="per">/mo</span>' : '';
+  const isRented = p.status === 'rented';
+  const statusBadge = isRented ? '<span class="badge-status rented">● RENTED</span>' : '<span class="badge-status available">● AVAILABLE</span>';
+  const hasVideo = p.tiktok_url ? '<span class="badge-video">▶ Video</span>' : '';
+  const playButton = p.tiktok_url ? '<div class="video-play-overlay"></div>' : '';
+  const bedLabel = p.unitLabel || ((p.bedrooms === 0 || p.bedrooms === '0') ? 'Studio' : p.bedrooms + ' <span class="dim">bd</span>');
+
+  return `
+    <div class="property-card" onclick="openPropertyView('${p.id}')">
+      <div class="property-img-wrap">
+        <img class="property-img" src="${img}" alt="${escapeHtml(p.title)}" loading="lazy">
+        <span class="badge-overlay ${typeClass}">${typeLabel}</span>
+        ${p.isHot && !isRented ? '<span class="badge-hot">HOT</span>' : ''}
+        ${playButton}
+        ${hasVideo}
+        ${statusBadge}
+      </div>
+      <div class="property-info">
+        <div class="property-price">Ksh ${Number(p.price).toLocaleString()}${priceSuffix}</div>
+        <div class="property-title">${escapeHtml(p.title)}</div>
+        <div class="property-loc"><span class="pin">📍</span> ${escapeHtml(p.location)}</div>
+        <div class="property-specs">
+          <span>🛏️ ${bedLabel}</span>
+          <span>🚿 ${p.bathrooms} <span class="dim">ba</span></span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function slideScroll(trackId, direction) {
+  const track = document.getElementById(trackId);
+  if (!track) return;
+  const card = track.querySelector('.slide-card');
+  if (!card) return;
+  const cardWidth = card.offsetWidth + 12;
+  track.scrollBy({ left: cardWidth * direction, behavior: 'smooth' });
+}
+
+function slideJump(trackId, index) {
+  const track = document.getElementById(trackId);
+  if (!track) return;
+  const cards = track.querySelectorAll('.slide-card');
+  if (!cards[index]) return;
+  const cardWidth = cards[0].offsetWidth + 12;
+  track.scrollTo({ left: cardWidth * index, behavior: 'smooth' });
+}
+
+function setupSlideDots(trackId, dotsId) {
+  const track = document.getElementById(trackId);
+  const dots = document.getElementById(dotsId);
+  if (!track || !dots) return;
+  const updateDots = () => {
+    const cards = track.querySelectorAll('.slide-card');
+    if (cards.length <= 1) { dots.innerHTML = ''; return; }
+    const cardWidth = cards[0].offsetWidth + 12;
+    const activeIndex = Math.round(track.scrollLeft / cardWidth);
+    if (dots.children.length !== cards.length) {
+      dots.innerHTML = Array.from(cards).map((_, i) => `<div class="slide-dot ${i === activeIndex ? 'active' : ''}" onclick="slideJump('${trackId}', ${i})"></div>`).join('');
+    } else {
+      Array.from(dots.children).forEach((d, i) => { d.classList.toggle('active', i === activeIndex); });
+    }
+  };
+  track.addEventListener('scroll', updateDots);
+  setTimeout(updateDots, 300);
+}
+
+async function loadFeatured() {
+  const track = document.getElementById('featuredSlideTrack');
+  try {
+    const data = await api('/api/properties?limit=12');
+    const list = data.properties || [];
+    let hotProps = list.filter(p => p.isHot === true || p.isHot === 'true');
+    if (hotProps.length === 0) {
+      hotProps = [...list].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 6);
+    } else {
+      hotProps = hotProps.slice(0, 6);
+    }
+    state.featuredProperties = hotProps;
+    if (state.featuredProperties.length === 0) {
+      track.innerHTML = '<div class="empty" style="flex:0 0 100%; padding:30px 20px;"><div class="empty-icon">🏘️</div><div style="font-size:13px;">No properties yet</div></div>';
+      return;
+    }
+    track.innerHTML = state.featuredProperties.map(p => renderSlideCard(p, false)).join('');
+    setupSlideDots('featuredSlideTrack', 'featuredSlideDots');
+  } catch (e) {
+    track.innerHTML = '<div class="empty" style="flex:0 0 100%; padding:30px 20px;"><div class="empty-icon">⚠️</div><div style="font-size:13px;">Failed to load</div></div>';
+  }
+}
+
+async function loadProperties() {
+  const grid = document.getElementById('propertiesGrid');
+  const count = document.getElementById('propCount');
+  grid.innerHTML = '<div class="loader"><div class="spinner"></div><div>Loading properties...</div></div>';
+  count.textContent = 'Loading...';
+  try {
+    const data = await api('/api/properties?limit=500');
+    let list = data.properties || [];
+    state.properties = shuffleArray(list);
+    renderProperties();
+  } catch (e) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div>Failed to load</div></div>';
+    count.textContent = 'Error';
+  }
+}
+
+function renderProperties() {
+  const grid = document.getElementById('propertiesGrid');
+  const count = document.getElementById('propCount');
+  let filtered = state.properties.slice();
+  if (state.activeChipFilter.type) { filtered = filtered.filter(p => p.type === state.activeChipFilter.type); }
+  if (state.activeChipFilter.bedrooms !== '') {
+    const bd = Number(state.activeChipFilter.bedrooms);
+    if (bd === 3) { filtered = filtered.filter(p => Number(p.bedrooms) >= 3); }
+    else { filtered = filtered.filter(p => Number(p.bedrooms) === bd); }
+  }
+  count.textContent = filtered.length + ' listing' + (filtered.length !== 1 ? 's' : '');
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">🏘️</div><div>No properties match</div></div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(p => renderPropertyCard(p)).join('');
+}
+
+function filterByType(btn, val) {
+  document.querySelectorAll('.filters .chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  if (val === 'rent' || val === 'sale') {
+    state.activeChipFilter.type = val;
+    state.activeChipFilter.bedrooms = '';
+  } else if (val !== '') {
+    state.activeChipFilter.bedrooms = val;
+    state.activeChipFilter.type = '';
+  } else {
+    state.activeChipFilter.type = '';
+    state.activeChipFilter.bedrooms = '';
+  }
+  renderProperties();
+  scrollToAll();
+}function renderVideoTour(url) {
+  const container = document.getElementById('pvVideoContainer');
+  const actions = document.getElementById('pvVideoActions');
+  container.innerHTML = '';
+  actions.innerHTML = '';
+  if (!url) return;
+  if (url.includes('player.cloudinary.com/embed/')) {
+    container.innerHTML = `<div class="pv-video-wrap"><div class="pv-video-16x9"><iframe src="${url}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
+    return;
+  }
+  if (url.includes('res.cloudinary.com') && url.includes('/video/upload/')) {
+    const videoUrl = /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url) ? url : url + '.mp4';
+    container.innerHTML = `<div class="pv-video-wrap"><div class="pv-video-16x9"><video src="${videoUrl}" controls playsinline preload="metadata"></video></div></div>`;
+    return;
+  }
+  let ytId = null;
+  let m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
+  if (m) ytId = m[1];
+  if (ytId) {
+    container.innerHTML = `<div class="pv-video-wrap"><div class="pv-video-16x9"><iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
+    actions.innerHTML = `<a href="${url}" target="_blank" rel="noopener" class="pv-video-link">▶️ Watch on YouTube</a>`;
+    return;
+  }
+  m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (m) {
+    container.innerHTML = `<div class="pv-video-wrap"><div class="pv-video-16x9"><iframe src="https://player.vimeo.com/video/${m[1]}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
+    actions.innerHTML = `<a href="${url}" target="_blank" rel="noopener" class="pv-video-link">▶️ Watch on Vimeo</a>`;
+    return;
+  }
+  if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url)) {
+    container.innerHTML = `<div class="pv-video-wrap"><div class="pv-video-16x9"><video src="${url}" controls playsinline preload="metadata"></video></div></div>`;
+    return;
+  }
+  m = url.match(/\/video\/(\d+)/);
+  if (m && url.includes('tiktok')) {
+    const videoId = m[1];
+    container.innerHTML = `<div class="pv-video-wrap"><div class="pv-video-vertical"><iframe src="https://www.tiktok.com/embed/v2/${videoId}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="unsafe-url" loading="lazy"></iframe></div></div>`;
+    actions.innerHTML = `<a href="${url}" target="_blank" rel="noopener" class="pv-video-link">▶️ Watch on TikTok</a>`;
+    return;
+  }
+  container.innerHTML = `<div class="pv-video-fallback"><span class="icon">🎬</span><div class="title">Video Tour Available</div><div class="subtitle">Tap below to watch the full property video.</div><a href="${url}" target="_blank" rel="noopener" class="watch-btn">▶️ Watch Video</a></div>`;
+}
+
+function openPropertyView(propertyId) {
+  let p = state.properties.find(x => x.id === propertyId);
+  if (!p) p = state.featuredProperties.find(x => x.id === propertyId);
+  if (!p) p = state.nearbyProperties.find(x => x.id === propertyId);
+  if (!p) return;
+  state.selectedProperty = p;
+  state.currentImageIndex = 0;
+  let images = (p.images && p.images.length) ? p.images : [];
+  images = images.filter(img => !img.includes('via.placeholder.com'));
+  if (images.length === 0) images = [LOGO_PLACEHOLDER];
+  document.getElementById('pvHeroImg').src = images[0];
+  document.getElementById('pvCounter').textContent = '📸 1 / ' + images.length;
+  const thumbsWrap = document.getElementById('pvThumbs');
+  if (images.length > 1) {
+    thumbsWrap.style.display = 'flex';
+    thumbsWrap.innerHTML = images.map((img, i) => `<div class="pv-thumb ${i === 0 ? 'active' : ''}" onclick="switchImage(${i})"><img src="${img}" alt="thumb ${i+1}"></div>`).join('');
+  } else {
+    thumbsWrap.style.display = 'none';
+    thumbsWrap.innerHTML = '';
+  }
+  document.getElementById('pvTypeBadge').textContent = p.type === 'sale' ? 'FOR SALE' : 'FOR RENT';
+  document.getElementById('pvTypeBadge').className = 'pv-badge ' + (p.type === 'sale' ? 'type-sale' : 'type-rent');
+  const priceSuffix = p.type === 'rent' ? ' <span class="per">/mo</span>' : '';
+  document.getElementById('pvPrice').innerHTML = 'Ksh ' + Number(p.price).toLocaleString() + priceSuffix;
+  document.getElementById('pvTitle').textContent = p.title;
+  document.getElementById('pvLocation').innerHTML = '<span class="pin">📍</span> ' + escapeHtml(p.location);
+  document.getElementById('pvBeds').textContent = p.unitLabel || ((p.bedrooms === 0 || p.bedrooms === '0') ? 'Studio' : p.bedrooms);
+  document.getElementById('pvBaths').textContent = p.bathrooms;
+  document.getElementById('pvTypeLabel').textContent = p.type === 'sale' ? 'Sale' : 'Rent';
+  let cleanDesc = p.description || 'No description provided.';
+  cleanDesc = cleanDesc.replace(/(?:\+?254|0)[17]\d{1,2}[\s-]?\d{3}[\s-]?\d{3,4}/g, '').trim();
+  document.getElementById('pvDescription').textContent = cleanDesc;
+  const videoSection = document.getElementById('pvVideoSection');
+  if (p.tiktok_url) {
+    renderVideoTour(p.tiktok_url);
+    videoSection.style.display = 'block';
+  } else {
+    videoSection.style.display = 'none';
+    document.getElementById('pvVideoContainer').innerHTML = '';
+    document.getElementById('pvVideoActions').innerHTML = '';
+  }
+  const heartBtn = document.getElementById('pvHeart');
+  heartBtn.textContent = state.savedFavorites.includes(p.id) ? '❤️' : '🤍';
+  heartBtn.classList.toggle('active', state.savedFavorites.includes(p.id));
+  updateSubmitButtonState(p.id);
+  document.getElementById('propertyView').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  startAutoplay();
+}
+
+function closePropertyView() {
+  document.getElementById('propertyView').classList.remove('show');
+  document.body.style.overflow = '';
+  stopAutoplay();
+  document.getElementById('pvVideoContainer').innerHTML = '';
+  document.getElementById('pvVideoActions').innerHTML = '';
+}
+
+function updateSubmitButtonState(propertyId) {
+  const viewingBtn = document.getElementById('scheduleViewingBtn');
+  const landlordBtn = document.getElementById('speakLandlordBtn');
+  const viewingSubmission = getPropertySubmission(propertyId, 'viewing');
+  const landlordSubmission = getPropertySubmission(propertyId, 'landlord');
+  if (viewingSubmission) {
+    viewingBtn.innerHTML = '<span style="font-size:18px;">✅</span><span>Viewing Already Requested</span><span style="font-size:16px;">✓</span>';
+    viewingBtn.style.background = '#e8f5e9'; viewingBtn.style.color = '#1a6b3c'; viewingBtn.style.border = '1px solid #1a6b3c'; viewingBtn.style.cursor = 'default';
+    viewingBtn.onclick = () => showAlreadySubmitted('viewing', viewingSubmission.reference);
+  } else {
+    viewingBtn.innerHTML = '<span style="font-size:18px;">📅</span><span>Schedule a Viewing</span><span style="font-size:16px;">→</span>';
+    viewingBtn.style.background = 'linear-gradient(135deg, #1a6b3c, #14532d)'; viewingBtn.style.color = 'white'; viewingBtn.style.border = 'none'; viewingBtn.style.cursor = 'pointer';
+    viewingBtn.onclick = openViewingModal;
+  }
+  if (landlordSubmission) {
+    landlordBtn.innerHTML = '<span style="font-size:18px;">✅</span><span>Enquiry Already Sent</span><span style="font-size:16px;">✓</span>';
+    landlordBtn.style.background = '#e8f5e9'; landlordBtn.style.color = '#1a6b3c'; landlordBtn.style.border = '1px solid #1a6b3c'; landlordBtn.style.cursor = 'default';
+    landlordBtn.onclick = () => showAlreadySubmitted('landlord', landlordSubmission.reference);
+  } else {
+    landlordBtn.innerHTML = '<span style="font-size:18px;">📞</span><span>Speak to Landlord Direct</span><span style="font-size:16px;">→</span>';
+    landlordBtn.style.background = 'white'; landlordBtn.style.color = '#1a6b3c'; landlordBtn.style.border = '2px solid #1a6b3c'; landlordBtn.style.cursor = 'pointer';
+    landlordBtn.onclick = openLandlordModal;
+  }
+}
+
+function showAlreadySubmitted(type, reference) {
+  const title = type === 'viewing' ? '📅 Viewing Already Requested' : '📞 Enquiry Already Sent';
+  const msg = type === 'viewing' ? 'Our agent will contact you shortly to book your viewing appointment.' : 'The landlord will contact you shortly to discuss terms.';
+  alert(title + '\n\nReference: ' + reference + '\n\n' + msg + '\n\nIf you need help, call 0738 264 143.');
+}
+
+function switchImage(index) {
+  const p = state.selectedProperty;
+  if (!p) return;
+  let images = (p.images && p.images.length) ? p.images : [];
+  images = images.filter(img => !img.includes('via.placeholder.com'));
+  if (images.length === 0) images = [LOGO_PLACEHOLDER];
+  if (index < 0 || index >= images.length) return;
+  state.currentImageIndex = index;
+  document.getElementById('pvHeroImg').src = images[index];
+  document.getElementById('pvCounter').textContent = '📸 ' + (index + 1) + ' / ' + images.length;
+  document.querySelectorAll('.pv-thumb').forEach((t, i) => t.classList.toggle('active', i === index));
+  if (state.autoplayInterval) startAutoplay();
+}
+
+function startAutoplay() {
+  stopAutoplay();
+  const p = state.selectedProperty;
+  if (!p || !p.images || p.images.length < 2) {
+    document.getElementById('pvAutoplayFill').style.width = '0%'; return;
+  }
+  const duration = 4000;
+  const fill = document.getElementById('pvAutoplayFill');
+  fill.style.transition = 'none'; fill.style.width = '0%';
+  setTimeout(() => { fill.style.transition = 'width ' + duration + 'ms linear'; fill.style.width = '100%'; }, 50);
+  state.autoplayInterval = setInterval(() => {
+    const p = state.selectedProperty;
+    if (!p || !p.images || p.images.length < 2) return;
+    switchImage((state.currentImageIndex + 1) % p.images.length);
+    fill.style.transition = 'none'; fill.style.width = '0%';
+    setTimeout(() => { fill.style.transition = 'width ' + duration + 'ms linear'; fill.style.width = '100%'; }, 50);
+  }, duration);
+}
+
+function stopAutoplay() {
+  if (state.autoplayInterval) { clearInterval(state.autoplayInterval); state.autoplayInterval = null; }
+  const fill = document.getElementById('pvAutoplayFill');
+  if (fill) fill.style.width = '0%';
+}
+
+function toggleHeart() {
+  if (!state.selectedProperty) return;
+  const id = state.selectedProperty.id;
+  toggleFavorite(id, null);
+  const heartBtn = document.getElementById('pvHeart');
+  heartBtn.textContent = state.savedFavorites.includes(id) ? '❤️' : '🤍';
+  heartBtn.classList.toggle('active', state.savedFavorites.includes(id));
+}
+
+let touchStartX = 0;
+const pvHero = document.getElementById('pvHeroImg');
+if (pvHero) {
+  pvHero.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  pvHero.addEventListener('touchend', e => {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(diff) > 50) {
+      if (diff < 0) switchImage(state.currentImageIndex + 1);
+      else switchImage(state.currentImageIndex - 1);
+    }
+  }, { passive: true });
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePropertyView(); });
+
+function openViewingModal() {
+  if (!state.selectedProperty) return;
+  document.getElementById('viewingError').style.display = 'none';
+  document.getElementById('viewingSuccess').style.display = 'none';
+  document.getElementById('viewingForm').style.display = 'block';
+  const savedName = localStorage.getItem('hh_name');
+  const savedPhone = localStorage.getItem('hh_phone');
+  if (savedName) document.getElementById('viewingName').value = savedName;
+  if (savedPhone) document.getElementById('viewingPhone').value = savedPhone;
+  openModal('viewingModal');
+}
+
+function openLandlordModal() {
+  if (!state.selectedProperty) return;
+  document.getElementById('landlordError').style.display = 'none';
+  document.getElementById('landlordSuccess').style.display = 'none';
+  document.getElementById('landlordForm').style.display = 'block';
+  document.getElementById('landlordConfirm').checked = false;
+  const savedName = localStorage.getItem('hh_name');
+  const savedPhone = localStorage.getItem('hh_phone');
+  if (savedName) document.getElementById('landlordName').value = savedName;
+  if (savedPhone) document.getElementById('landlordPhone').value = savedPhone;
+  openModal('landlordModal');
+}
+
+async function submitViewingRequest() {
+  const errEl = document.getElementById('viewingError');
+  const okEl = document.getElementById('viewingSuccess');
+  const btn = document.getElementById('viewingSubmitBtn');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  const name = document.getElementById('viewingName').value.trim();
+  const phone = document.getElementById('viewingPhone').value.trim();
+  const date = document.getElementById('viewingDate').value;
+  const time = document.getElementById('viewingTime').value;
+  const message = document.getElementById('viewingMessage').value.trim();
+  if (!name || name.length < 2) { errEl.textContent = 'Please enter your name'; errEl.style.display = 'block'; return; }
+  if (!phone || phone.length < 9) { errEl.textContent = 'Please enter a valid phone number'; errEl.style.display = 'block'; return; }
+  if (!date) { errEl.textContent = 'Please select a preferred viewing date'; errEl.style.display = 'block'; return; }
+  localStorage.setItem('hh_name', name);
+  localStorage.setItem('hh_phone', phone);
+  btn.disabled = true; btn.textContent = '⏳ Sending...';
+  try {
+    const res = await api('/api/enquiries/viewing', { method: 'POST', body: JSON.stringify({ property_id: state.selectedProperty.id, name, phone, preferred_date: date, preferred_time: time || null, message: message || null }) });
+    markPropertySubmitted(state.selectedProperty.id, res.reference, 'viewing');
+    document.getElementById('viewingForm').style.display = 'none';
+    okEl.innerHTML = buildViewingSuccessHTML(name, res.reference);
+    okEl.style.display = 'block';
+    updateSubmitButtonState(state.selectedProperty.id);
+  } catch (e) {
+    if (e.status === 409 && e.response && e.response.alreadySubmitted) {
+      markPropertySubmitted(state.selectedProperty.id, e.response.reference, 'viewing');
+      updateSubmitButtonState(state.selectedProperty.id);
+      errEl.innerHTML = 'You have already submitted a viewing request for this property.<br><br><b>Reference: ' + e.response.reference + '</b><br><br>Our agent will contact you shortly.';
+      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = '📩 Request Viewing Appointment'; return;
+    }
+    errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = '📩 Request Viewing Appointment';
+  }
+}
+
+async function submitLandlordRequest() {
+  const errEl = document.getElementById('landlordError');
+  const okEl = document.getElementById('landlordSuccess');
+  const btn = document.getElementById('landlordSubmitBtn');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  const name = document.getElementById('landlordName').value.trim();
+  const phone = document.getElementById('landlordPhone').value.trim();
+  const moveIn = document.getElementById('landlordMoveIn').value;
+  const message = document.getElementById('landlordMessage').value.trim();
+  const confirmed = document.getElementById('landlordConfirm').checked;
+  if (!name || name.length < 2) { errEl.textContent = 'Please enter your name'; errEl.style.display = 'block'; return; }
+  if (!phone || phone.length < 9) { errEl.textContent = 'Please enter a valid phone number'; errEl.style.display = 'block'; return; }
+  if (!moveIn) { errEl.textContent = 'Please select when you want to move in'; errEl.style.display = 'block'; return; }
+  if (!confirmed) { errEl.textContent = 'Please confirm you are ready to move in within 30 days'; errEl.style.display = 'block'; return; }
+  localStorage.setItem('hh_name', name);
+  localStorage.setItem('hh_phone', phone);
+  btn.disabled = true; btn.textContent = '⏳ Sending...';
+  try {
+    const res = await api('/api/enquiries/landlord', { method: 'POST', body: JSON.stringify({ property_id: state.selectedProperty.id, name, phone, move_in_date: moveIn, message: message || null }) });
+    markPropertySubmitted(state.selectedProperty.id, res.reference, 'landlord');
+    document.getElementById('landlordForm').style.display = 'none';
+    okEl.innerHTML = buildLandlordSuccessHTML(name, res.reference, state.selectedProperty.landlord_phone);
+    okEl.style.display = 'block';
+    updateSubmitButtonState(state.selectedProperty.id);
+  } catch (e) {
+    if (e.status === 409 && e.response && e.response.alreadySubmitted) {
+      markPropertySubmitted(state.selectedProperty.id, e.response.reference, 'landlord');
+      updateSubmitButtonState(state.selectedProperty.id);
+      errEl.innerHTML = 'You have already submitted an enquiry for this property.<br><br><b>Reference: ' + e.response.reference + '</b><br><br>The landlord will contact you shortly.';
+      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = '📩 Send to Landlord'; return;
+    }
+    errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = '📩 Send to Landlord';
+  }
+}
+
+function buildViewingSuccessHTML(name, reference) {
+  const waText = encodeURIComponent('Hi Delta Property Agency, I just submitted a viewing request with reference ' + reference + '. My name is ' + name + '. I would like to confirm my viewing appointment.');
+  return `
+    <div style="text-align:center; padding:8px 0;">
+      <div style="width:80px; height:80px; margin:0 auto 16px; background:linear-gradient(135deg, #1a6b3c, #14532d); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(26,107,60,0.4);">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13L9 17L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="font-weight:800; font-size:19px; margin-bottom:8px; letter-spacing:-0.3px; color:var(--text);">Viewing Request Received</div>
+      <div style="font-size:13.5px; color:var(--muted); line-height:1.6; margin-bottom:20px;">Thank you, <b style="color:var(--text);">${escapeHtml(name)}</b>.<br>Our agent will contact you shortly to help you book your viewing appointment.</div>
+      <div style="background:#e8f5e9; border:1px solid rgba(26,107,60,0.3); border-radius:12px; padding:14px; margin-bottom:14px; text-align:left;">
+        <div style="font-size:12.5px; color:#14532d; font-weight:800; margin-bottom:8px;">ℹ️ Viewing Appointment Details:</div>
+        <div style="font-size:12.5px; color:var(--text); line-height:1.8;">• Booking fee: <b>KES 1,000</b><br>• You will be able to view up to <b>5 houses</b><br>• Payment is handled directly with our agent<br>• Our agent will explain the full process when they call you</div>
+      </div>
+      <div style="background:var(--bg); border:1px solid var(--border); padding:12px; border-radius:10px; margin-bottom:16px;">
+        <div style="font-size:11px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:1px; font-weight:700;">Your Reference</div>
+        <b style="color:#1a6b3c; font-size:16px; letter-spacing:2px; font-family:monospace;">${escapeHtml(reference)}</b>
+      </div>
+      <a href="https://wa.me/254738264143?text=${waText}" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; font-size:13.5px; font-weight:800; letter-spacing:0.3px; background:#25D366; color:white; border:none; border-radius:12px; text-decoration:none; box-shadow:0 6px 20px rgba(37,211,102,0.4); margin-bottom:10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Confirm on WhatsApp with Landlord
+      </a>
+      <button class="btn btn-outline" style="width:100%; padding:12px;" onclick="closeModal('landlordModal'); closePropertyView();">Done</button>
+    </div>`;
+}
+
+function openTrackBooking() {
+  document.getElementById('trackError').style.display = 'none';
+  document.getElementById('trackResult').innerHTML = '';
+  document.getElementById('trackRef').value = '';
+  openModal('trackModal');
+}
+
+async function trackEnquiry() {
+  const ref = document.getElementById('trackRef').value.trim();
+  const errEl = document.getElementById('trackError');
+  const resultEl = document.getElementById('trackResult');
+  errEl.style.display = 'none'; resultEl.innerHTML = '';
+  if (!ref) { errEl.textContent = 'Please enter a reference'; errEl.style.display = 'block'; return; }
+  resultEl.innerHTML = `<div style="text-align:center; padding:16px 0;"><div style="font-size:13px; color:var(--muted); margin-bottom:12px;">For immediate assistance with your enquiry, please contact us directly.</div><a href="https://wa.me/254738264143?text=Hi%2C%20I%20would%20like%20to%20track%20my%20enquiry.%20Reference%3A%20${encodeURIComponent(ref)}" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; background:#25D366; color:white; padding:10px 18px; border-radius:8px; text-decoration:none; font-weight:700; font-size:13px;">💬 WhatsApp Us</a><div style="font-size:12px; color:var(--muted); margin-top:12px;">Or call <b style="color:var(--accent);">0738 264 143</b></div></div>`;
+}
+
+function openAdminLogin() {
+  if (state.token && state.user) {
+    const action = confirm('Logged in as ' + state.user.name + '.\n\nOK = logout, Cancel = dashboard.');
+    if (action) {
+      state.token = null; state.user = null;
+      localStorage.removeItem('hh_token'); localStorage.removeItem('hh_user');
+      document.getElementById('adminBtn').textContent = 'Agent'; alert('Logged out');
+    } else {
+      const redirect = state.user.role === 'landlord' ? '/landlord.html' : '/dashboard.html';
+      window.location.href = redirect;
+    }
+    return;
+  }
+  document.getElementById('adminError').style.display = 'none';
+  openModal('adminModal');
+}
+
+async function adminLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value;
+  const errEl = document.getElementById('adminError');
+  errEl.style.display = 'none';
+  if (!email || !password) { errEl.textContent = 'Email and password required'; errEl.style.display = 'block'; return; }
+  try {
+    const res = await api('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+    state.token = res.token; state.user = res.user;
+    localStorage.setItem('hh_token', res.token);
+    localStorage.setItem('hh_user', JSON.stringify(res.user));
+    document.getElementById('adminBtn').textContent = '👤 ' + res.user.name.split(' ')[0];
+    closeModal('adminModal');
+    setTimeout(() => { window.location.href = res.redirect || '/dashboard.html'; }, 500);
+  } catch (e) {
+    errEl.textContent = e.message; errEl.style.display = 'block';
+  }
+}
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+});
+
+function startAutoRefresh() {
+  if (state.refreshInterval) clearInterval(state.refreshInterval);
+  state.refreshInterval = setInterval(async () => {
+    if (document.getElementById('propertyView').classList.contains('show')) return;
+    if (document.hidden) return;
+    try {
+      const data = await api('/api/properties?limit=500');
+      const newList = data.properties || [];
+      if (newList.length !== state.properties.length) {
+        state.properties = shuffleArray(newList);
+        renderProperties();
+      }
+    } catch (e) {}
+  }, 30000);
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    if (state.refreshInterval) clearInterval(state.refreshInterval);
+  } else {
+    startAutoRefresh(); loadFeatured();
+  }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (state.user) {
+    document.getElementById('adminBtn').textContent = '👤 ' + state.user.name.split(' ')[0];
+  }
+  loadFeatured();
+  loadProperties();
+  if (shouldAskLocation()) {
+    setTimeout(() => { showLocationModal(); }, 2500);
+  } else if (localStorage.getItem('hh_location_allowed') === 'true' && navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        state.customerLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        loadNearbyProperties();
+      },
+      () => {},
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 }
+    );
+  }
+  startAutoRefresh();
+});
+</script>
+</body>
+</html>
