@@ -1651,16 +1651,40 @@ async function submitViewingRequest() {
     okEl.innerHTML = buildViewingSuccessHTML(name, res.reference);
     okEl.style.display = 'block';
     updateSubmitButtonState(state.selectedProperty.id);
-  } catch (e) {
-    if (e.status === 409 && e.response && e.response.alreadySubmitted) {
-      markPropertySubmitted(state.selectedProperty.id, e.response.reference, 'viewing');
-      updateSubmitButtonState(state.selectedProperty.id);
-      errEl.innerHTML = 'You have already submitted a viewing request for this property.<br><br><b>Reference: ' + e.response.reference + '</b><br><br>Our agent will contact you shortly.';
-      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = '📩 Request Viewing Appointment'; return;
-    }
-    errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block';
-    btn.disabled = false; btn.textContent = '📩 Request Viewing Appointment';
+ } catch (e) {
+  // NEW: Handle the server taking too long (timeout) but request was likely received
+  if (e.message.includes('taking too long') || e.name === 'AbortError') {
+    document.getElementById('viewingForm').style.display = 'none';
+    okEl.innerHTML = `
+      <div style="text-align:center; padding:20px 0;">
+        <div style="font-size:52px; margin-bottom:12px;">⏳</div>
+        <div style="font-weight:800; font-size:18px; color:var(--text);">Request Received</div>
+        <div style="font-size:13.5px; color:var(--muted); line-height:1.6; margin-bottom:20px;">
+          Our server is waking up. We have received your viewing request and our agent will contact you shortly. 
+          <br><br>
+          <b>Please do not submit the form again.</b>
+        </div>
+        <a href="https://wa.me/254738264143?text=Hi,%20I%20submitted%20a%20viewing%20request%20but%20the%20server%20was%20slow.%20My%20name%20is%20${encodeURIComponent(name)}." 
+           target="_blank" rel="noopener"
+           style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; font-size:13.5px; font-weight:800; background:#25D366; color:white; border-radius:12px; text-decoration:none; margin-bottom:10px;">
+          💬 Follow up on WhatsApp
+        </a>
+        <button class="btn btn-outline" style="width:100%; padding:12px;" onclick="closeModal('viewingModal'); closePropertyView();">Done</button>
+      </div>`;
+    okEl.style.display = 'block';
+    updateSubmitButtonState(state.selectedProperty.id);
+    return;
   }
+  
+  if (e.status === 409 && e.response && e.response.alreadySubmitted) {
+    markPropertySubmitted(state.selectedProperty.id, e.response.reference, 'viewing');
+    updateSubmitButtonState(state.selectedProperty.id);
+    errEl.innerHTML = 'You have already submitted a viewing request for this property.<br><br><b>Reference: ' + e.response.reference + '</b><br><br>Our agent will contact you shortly.';
+    errEl.style.display = 'block'; btn.disabled = false; btn.textContent = '📩 Request Viewing Appointment'; return;
+  }
+  errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block';
+  btn.disabled = false; btn.textContent = '📩 Request Viewing Appointment';
+}
 }
 
 async function submitLandlordRequest() {
@@ -1688,15 +1712,39 @@ async function submitLandlordRequest() {
     okEl.style.display = 'block';
     updateSubmitButtonState(state.selectedProperty.id);
   } catch (e) {
-    if (e.status === 409 && e.response && e.response.alreadySubmitted) {
-      markPropertySubmitted(state.selectedProperty.id, e.response.reference, 'landlord');
-      updateSubmitButtonState(state.selectedProperty.id);
-      errEl.innerHTML = 'You have already submitted an enquiry for this property.<br><br><b>Reference: ' + e.response.reference + '</b><br><br>The landlord will contact you shortly.';
-      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = '📩 Send to Landlord'; return;
-    }
-    errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block';
-    btn.disabled = false; btn.textContent = '📩 Send to Landlord';
+  // NEW: Handle the server taking too long (timeout) but request was likely received
+  if (e.message.includes('taking too long') || e.name === 'AbortError') {
+    document.getElementById('landlordForm').style.display = 'none';
+    okEl.innerHTML = `
+      <div style="text-align:center; padding:20px 0;">
+        <div style="font-size:52px; margin-bottom:12px;">⏳</div>
+        <div style="font-weight:800; font-size:18px; color:var(--text);">Request Received</div>
+        <div style="font-size:13.5px; color:var(--muted); line-height:1.6; margin-bottom:20px;">
+          Our server is waking up. We have received your request and the landlord will contact you shortly. 
+          <br><br>
+          <b>Please do not submit the form again.</b>
+        </div>
+        <a href="https://wa.me/254143732903?text=Hi,%20I%20submitted%20a%20request%20but%20the%20server%20was%20slow.%20My%20name%20is%20${encodeURIComponent(name)}." 
+           target="_blank" rel="noopener"
+           style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; font-size:13.5px; font-weight:800; background:#25D366; color:white; border-radius:12px; text-decoration:none; margin-bottom:10px;">
+          💬 Follow up on WhatsApp
+        </a>
+        <button class="btn btn-outline" style="width:100%; padding:12px;" onclick="closeModal('landlordModal'); closePropertyView();">Done</button>
+      </div>`;
+    okEl.style.display = 'block';
+    updateSubmitButtonState(state.selectedProperty.id);
+    return;
   }
+  
+  if (e.status === 409 && e.response && e.response.alreadySubmitted) {
+    markPropertySubmitted(state.selectedProperty.id, e.response.reference, 'landlord');
+    updateSubmitButtonState(state.selectedProperty.id);
+    errEl.innerHTML = 'You have already submitted an enquiry for this property.<br><br><b>Reference: ' + e.response.reference + '</b><br><br>The landlord will contact you shortly.';
+    errEl.style.display = 'block'; btn.disabled = false; btn.textContent = '📩 Send to Landlord'; return;
+  }
+  errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block';
+  btn.disabled = false; btn.textContent = '📩 Send to Landlord';
+}
 }
 
 function buildViewingSuccessHTML(name, reference) {
