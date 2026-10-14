@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Dashboard - HouseHunt Kenya</title>
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png">
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --card-hover: #fafafa;
+    --accent: #3b82f6;
+    --accent-dark: #2563eb;
+    --accent-light: #dbeafe;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --border-dark: #d1d5db;
+    --err: #ef4444;
+    --danger: #dc2626;
+    --danger-bg: #fee2e2;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --warn: #f59e0b;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 24px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+
+  header {
+    background: white;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .header-inner {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; }
+  .logo img { height: 40px; width: 40px; border-radius: 50%; object-fit: cover; background: white; border: 1px solid var(--border); }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.15; }
+  .logo-text .main { font-size: 14px; font-weight: 800; letter-spacing: -0.3px; color: var(--text); }
+  .logo-text .main span { color: var(--accent); }
+  .logo-text .sub { font-size: 9px; color: var(--muted); font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; }
+  .header-user { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .role-badge {
+    background: var(--accent-light); color: var(--accent-dark);
+    padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .user-name { font-size: 13px; font-weight: 700; color: var(--text); }
+
+  .btn {
+    padding: 10px 14px; border-radius: 8px; border: none;
+    font-weight: 700; font-size: 12.5px; cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-outline { background: white; color: var(--text); border: 1px solid var(--border-dark); }
+  .btn-outline:hover { background: var(--bg); }
+  .btn-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(220,38,38,0.3); }
+  .btn-danger:hover { background: #fecaca; }
+  .btn-edit { background: var(--accent-light); color: var(--accent-dark); border: 1px solid rgba(59,130,246,0.3); }
+  .btn-edit:hover { background: #bfdbfe; }
+  .btn-ai { background: linear-gradient(135deg, #a855f7, #7c3aed); color: white; border: none; }
+  .btn-ai:hover { opacity: 0.9; }
+  .btn-ai:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-video { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 10px 14px; font-size: 12px; font-weight: 700; }
+  .btn-video:hover { opacity: 0.9; }
+  .btn-video:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-tiktok { background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none; padding: 10px 14px; font-size: 12px; font-weight: 700; }
+  .btn-tiktok:hover { opacity: 0.9; }
+  .btn-tiktok:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-verify { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 8px 12px; font-size: 11.5px; }
+  .btn-verify:hover { opacity: 0.9; }
+  .btn-assign { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 8px 12px; font-size: 11.5px; }
+  .btn-assign:hover { opacity: 0.9; }
+  .btn-complete { background: var(--success-bg); color: var(--success); border: 1px solid rgba(21,128,61,0.3); padding: 8px 12px; font-size: 11.5px; }
+  .btn-complete:hover { background: #bbf7d0; }
+  .btn-cancel { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(220,38,38,0.3); padding: 8px 12px; font-size: 11.5px; }
+  .btn-cancel:hover { background: #fecaca; }.bulk-link {
+  background: var(--accent-light);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 12px;
+  padding: 14px;
+  margin: 16px 0;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px;
+}
+.bulk-link .info .title { font-size: 14px; font-weight: 800; margin-bottom: 2px; color: var(--accent-dark); }
+.bulk-link .info .desc { font-size: 12px; color: var(--muted); }
+
+.tabs {
+  display: flex; gap: 6px; padding: 16px 0;
+  overflow-x: auto; scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  padding: 10px 16px; border-radius: 10px; white-space: nowrap;
+  background: white; border: 1px solid var(--border-dark);
+  color: var(--text); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.tab:hover { border-color: var(--accent); color: var(--accent); }
+.tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.panel { display: none; padding: 20px 0; }
+.panel.active { display: block; }
+
+.section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap; gap: 10px;
+}
+.section-header h2 { font-size: 18px; font-weight: 800; color: var(--text); }
+.section-header .count { color: var(--muted); font-size: 12px; font-weight: 600; }
+
+.filter-bar {
+  display: flex; gap: 6px; overflow-x: auto; padding: 0 0 12px;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-chip {
+  padding: 7px 14px; border-radius: 20px; white-space: nowrap;
+  background: white; border: 1px solid var(--border-dark);
+  color: var(--text); font-size: 11.5px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+.filter-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}.form-card {
+  background: white;
+  border-radius: 14px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.form-card h3 { font-size: 16px; margin-bottom: 16px; color: var(--text); font-weight: 800; }
+
+.field { margin-bottom: 14px; }
+.field label {
+  display: block; font-size: 12px; color: var(--muted);
+  margin-bottom: 6px; font-weight: 700;
+}
+.field input, .field select, .field textarea {
+  width: 100%; padding: 12px 14px; border-radius: 10px;
+  background: white; border: 1px solid var(--border-dark);
+  color: var(--text); font-size: 14px; outline: none; font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+.field textarea { min-height: 70px; resize: vertical; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.image-upload {
+  border: 2px dashed var(--border-dark);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--bg);
+  transition: all 0.2s;
+  display: block;
+}
+.image-upload:hover { border-color: var(--accent); background: var(--accent-light); }
+.image-upload input { display: none; }
+.image-upload .upload-icon { font-size: 36px; margin-bottom: 8px; }
+.image-upload .upload-text { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+
+.image-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.image-preview .preview-item {
+  width: 76px; height: 76px; border-radius: 10px; overflow: hidden;
+  position: relative; border: 1px solid var(--border);
+}
+.image-preview img { width: 100%; height: 100%; object-fit: cover; }
+.image-preview .remove {
+  position: absolute; top: 3px; right: 3px;
+  background: rgba(0,0,0,0.75); color: white; border: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  font-size: 12px; cursor: pointer; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}.property-item {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 14px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s;
+}
+.property-item:hover { box-shadow: var(--shadow-md); }
+.property-item .prop-img {
+  width: 90px; height: 90px; border-radius: 10px;
+  object-fit: cover; background: var(--border); flex-shrink: 0;
+}
+.property-item .info { flex: 1; min-width: 0; }
+.property-item .info h4 {
+  font-size: 14.5px; font-weight: 800; margin-bottom: 5px; color: var(--text);
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.property-item .info p { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+.property-item .actions {
+  display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;
+}
+
+.video-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: var(--success-bg); color: var(--success);
+  font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 5px;
+  border: 1px solid rgba(21,128,61,0.25);
+}
+
+/* HOT BADGE (NEW) */
+.hot-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 5px;
+  letter-spacing: 0.4px;
+  box-shadow: 0 2px 6px rgba(239,68,68,0.3);
+}
+
+.enquiry-item {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.enquiry-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 10px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.enquiry-ref {
+  font-size: 14px; font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.enquiry-customer {
+  font-size: 12.5px; color: var(--muted);
+}
+.enquiry-customer b { color: var(--text); font-weight: 700; }
+.enquiry-status-badge {
+  display: inline-block;
+  font-size: 10px; padding: 4px 10px; border-radius: 6px;
+  font-weight: 800; letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.status-new {
+  background: var(--accent-light); color: var(--accent-dark);
+  border: 1px solid rgba(59,130,246,0.3);
+}
+.status-handled {
+  background: var(--success-bg); color: var(--success);
+  border: 1px solid rgba(21,128,61,0.3);
+}
+.status-viewing {
+  background: #f3e8ff; color: #7c3aed;
+  border: 1px solid rgba(168,85,247,0.3);
+}
+.status-landlord {
+  background: #fef3c7; color: #b45309;
+  border: 1px solid rgba(245,158,11,0.3);
+}
+.enquiry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  font-size: 12px;
+  margin: 12px 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.enquiry-grid .label {
+  color: var(--muted); font-size: 10.5px; text-transform: uppercase;
+  letter-spacing: 0.5px; font-weight: 700;
+  display: block; margin-bottom: 3px;
+}
+.enquiry-grid .value {
+  font-size: 13px; color: var(--text); font-weight: 600;
+  word-break: break-word;
+}
+.enquiry-msg {
+  background: var(--bg);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+  font-style: italic;
+}
+.enquiry-actions {
+  display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+  padding-top: 12px; border-top: 1px solid var(--border);
+}
+
+.alert {
+  padding: 12px 16px; border-radius: 10px; font-size: 13px;
+  margin-bottom: 14px; display: none;
+  line-height: 1.5;
+}
+.alert.err {
+  background: var(--danger-bg); color: var(--danger); display: block;
+  border: 1px solid rgba(220,38,38,0.3);
+}
+.alert.ok {
+  background: var(--success-bg); color: var(--success); display: block;
+  border: 1px solid rgba(21,128,61,0.3);
+}
+.alert.info {
+  background: var(--accent-light); color: var(--accent-dark); display: block;
+  border: 1px solid rgba(59,130,246,0.3);
+}
+
+.loading { text-align: center; padding: 40px; color: var(--muted); }
+.spinner {
+  width: 28px; height: 28px; border: 3px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin: 0 auto 10px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state { text-align: center; padding: 50px 20px; color: var(--muted); }
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }  .bulk-delete-bar {
+    display: none;
+    background: linear-gradient(135deg, var(--danger-bg), #fecaca);
+    border: 1px solid rgba(220,38,38,0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .bulk-delete-bar.show { display: flex; }
+  .bulk-delete-bar .info {
+    font-size: 13px; font-weight: 700; color: var(--danger);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .bulk-delete-bar .info .count-pill {
+    background: var(--danger); color: white;
+    padding: 2px 8px; border-radius: 12px;
+    font-size: 11px; font-weight: 800;
+  }
+  .bulk-delete-bar .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .select-all-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: white;
+    border-radius: 10px; border: 1px solid var(--border);
+    margin-bottom: 10px; font-size: 13px; font-weight: 700;
+    color: var(--text); cursor: pointer;
+    transition: background 0.2s;
+  }
+  .select-all-row:hover { background: var(--bg); }
+  .select-all-row input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .select-all-row .label { flex: 1; }
+
+  .property-item .prop-checkbox {
+    width: 20px; height: 20px;
+    accent-color: var(--accent);
+    cursor: pointer; flex-shrink: 0; margin-top: 4px;
+  }
+  .property-item .prop-checkbox-wrap {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px; flex-shrink: 0;
+  }
+
+  .prop-status-badge {
+    display: inline-block; font-size: 10px;
+    padding: 3px 8px; border-radius: 5px;
+    font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .prop-status-badge.available {
+    background: var(--success-bg); color: var(--success);
+    border: 1px solid rgba(21,128,61,0.25);
+  }
+  .prop-status-badge.rented {
+    background: var(--danger-bg); color: var(--danger);
+    border: 1px solid rgba(220,38,38,0.25);
+  }
+
+  .landmark-item {
+    background: white; border-radius: 12px;
+    border: 1px solid var(--border); padding: 14px;
+    margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+  }
+  .landmark-icon {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--accent-light); color: var(--accent-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .landmark-item .info { flex: 1; min-width: 0; }
+  .landmark-item .info h4 {
+    font-size: 14.5px; font-weight: 800; margin-bottom: 4px;
+    color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .landmark-category-tag {
+    display: inline-block;
+    background: var(--accent-light); color: var(--accent-dark);
+    font-size: 10px; padding: 2px 8px; border-radius: 5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .landmark-item .info p {
+    font-size: 12px; color: var(--muted); margin-bottom: 2px;
+  }
+
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none; align-items: center; justify-content: center;
+    padding: 16px; z-index: 9999;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white; border-radius: 18px; padding: 24px;
+    max-width: 500px; width: 100%;
+    border: 1px solid var(--border);
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal h2 { font-size: 20px; margin-bottom: 6px; letter-spacing: -0.3px; color: var(--text); font-weight: 800; }
+  .modal p { color: var(--muted); font-size: 13.5px; margin-bottom: 18px; }
+
+  .login-gate {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    z-index: 9999;
+  }
+  .login-gate .gate-box {
+    background: white; padding: 36px 28px; border-radius: 18px;
+    text-align: center; max-width: 400px; width: 100%;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+  }
+  .login-gate .gate-box h2 { font-size: 20px; margin-bottom: 10px; color: var(--text); }
+  .login-gate .gate-box p { color: var(--muted); font-size: 13.5px; margin-bottom: 22px; line-height: 1.5; }
+
+  .ai-box {
+    background: linear-gradient(135deg, #f3e8ff, #faf5ff);
+    border: 1px solid rgba(168,85,247,0.3);
+    border-radius: 12px; padding: 16px; margin-top: 14px;
+  }
+  .ai-box .ai-header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 800;
+    color: #7c3aed; margin-bottom: 10px;
+    text-transform: uppercase; letter-spacing: 0.6px;
+  }
+  .ai-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .ai-preview .ai-result {
+    width: 120px; height: 120px; border-radius: 12px; overflow: hidden;
+    border: 2px solid rgba(168,85,247,0.4);
+  }
+  .ai-preview .ai-result img { width: 100%; height: 100%; object-fit: cover; }
+
+  .btn-ai-desc {
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: white; border: none;
+    padding: 11px 14px; border-radius: 10px;
+    font-size: 12.5px; font-weight: 700;
+    cursor: pointer; width: 100%; margin-top: 10px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: opacity 0.2s;
+  }
+  .btn-ai-desc:hover { opacity: 0.9; }
+  .btn-ai-desc:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .desc-badge {
+    display: inline-block;
+    background: #f3e8ff; color: #7c3aed;
+    font-size: 9.5px; padding: 3px 8px; border-radius: 5px;
+    font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+    margin-left: 6px;
+  }
+
+  .upload-progress { margin-top: 10px; display: none; }
+  .upload-progress.show { display: block; }
+  .upload-progress .bar {
+    height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .upload-progress .fill {
+    height: 100%; background: linear-gradient(90deg, #3b82f6, #22c55e);
+    width: 0%; transition: width 0.3s ease;
+  }
+  .upload-progress .label {
+    font-size: 11px; color: var(--muted); margin-top: 6px; text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .enquiry-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body><div class="login-gate" id="loginGate">
+  <div class="gate-box">
+    <div style="font-size: 44px; margin-bottom: 12px;">🔒</div>
+    <h2>Agent Access Required</h2>
+    <p>You need to be signed in as an Agent or Admin to view this dashboard.</p>
+    <a href="/" class="btn btn-primary" style="width: 100%; padding: 14px;">Go to Homepage</a>
+  </div>
+</div>
+
+<header>
+  <div class="container header-inner">
+    <div class="logo">
+      <img src="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png" alt="HouseHunt Kenya">
+      <div class="logo-text">
+        <div class="main">HouseHunt <span>Kenya</span></div>
+        <div class="sub">Agent Dashboard</div>
+      </div>
+    </div>
+    <div class="header-user">
+      <span class="role-badge" id="userRole">Agent</span>
+      <span class="user-name" id="userName">...</span>
+      <button class="btn btn-outline" onclick="logout()" style="padding: 7px 14px; font-size: 11.5px;">Logout</button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="bulk-link">
+    <div class="info">
+      <div class="title">📚 Bulk Add Properties</div>
+      <div class="desc">Paste WhatsApp messages or lists — auto-add many properties at once</div>
+    </div>
+    <a href="/bulk-add.html" class="btn btn-primary" style="padding: 11px 18px; font-size: 12.5px;">Open Bulk Add →</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(this, 'bookings')">📅 Enquiries</button>
+    <button class="tab" onclick="switchTab(this, 'add-property')">➕ Add Property</button>
+    <button class="tab" onclick="switchTab(this, 'properties')">🏠 My Properties</button>
+    <button class="tab" onclick="switchTab(this, 'landmarks')">🗺️ Landmarks</button>
+  </div>
+
+  <div class="panel active" id="panel-bookings">
+    <div class="section-header">
+      <h2>💬 Enquiries</h2>
+      <span class="count" id="enquiryCount">-</span>
+    </div>
+
+    <div class="filter-bar" id="enquiryFilters">
+      <button class="filter-chip active" onclick="filterEnquiries(this, 'all')">All</button>
+      <button class="filter-chip" onclick="filterEnquiries(this, 'viewing')">📅 Viewing Requests</button>
+      <button class="filter-chip" onclick="filterEnquiries(this, 'landlord')">📞 Landlord Enquiries</button>
+      <button class="filter-chip" onclick="filterEnquiries(this, 'new')">🔵 New</button>
+      <button class="filter-chip" onclick="filterEnquiries(this, 'handled')">✅ Handled</button>
+    </div>
+
+    <div class="alert err" id="enquiriesError"></div>
+    <div id="enquiriesList">
+      <div class="loading"><div class="spinner"></div>Loading enquiries...</div>
+    </div>
+  </div><div class="panel" id="panel-add-property">
+  <div class="form-card">
+    <h3>📸 Add New Property</h3>
+    <div class="alert err" id="addPropError"></div>
+    <div class="alert ok" id="addPropSuccess"></div>
+
+    <div class="field">
+      <label>Property Title *</label>
+      <input type="text" id="propTitle" placeholder="e.g., Modern 2 Bedroom Apartment in Kilimani">
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Location *</label>
+        <input type="text" id="propLocation" placeholder="e.g., Kilimani, Nairobi">
+      </div>
+      <div class="field">
+        <label>Price (KES) *</label>
+        <input type="number" id="propPrice" placeholder="e.g., 35000">
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Bedrooms</label>
+        <input type="number" id="propBedrooms" placeholder="e.g., 2">
+      </div>
+      <div class="field">
+        <label>Bathrooms</label>
+        <input type="number" id="propBathrooms" placeholder="e.g., 1">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Type</label>
+      <select id="propType">
+        <option value="rent">For Rent</option>
+        <option value="sale">For Sale</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Description</label>
+      <textarea id="propDescription" placeholder="Describe the property..."></textarea>
+      <button type="button" class="btn-ai-desc" id="propGenDescBtn" onclick="generateDescForAdd()">
+        ✨ Generate Description with AI
+      </button>
+    </div>
+
+    <div class="field">
+      <label>📞 Agent Phone Number (Optional)</label>
+      <input type="tel" id="propAgentPhone" placeholder="e.g., 0712345678">
+    </div>
+
+    <div style="background:var(--accent-light); padding:14px; border-radius:12px; margin-bottom:16px; border:1px solid rgba(59,130,246,0.25);">
+      <div style="font-size:12.5px; color:var(--accent-dark); font-weight:800; margin-bottom:10px;">
+        🏠 Landlord Information (Required)
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Landlord Full Name *</label>
+        <input type="text" id="propLandlordName" placeholder="e.g., Peter Kamau">
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Landlord Phone *</label>
+        <input type="tel" id="propLandlordPhone" placeholder="e.g., 0722334455">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Landlord Email (Optional — for account creation)</label>
+        <input type="email" id="propLandlordEmail" placeholder="e.g., peter@gmail.com">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>🎬 Video Tour URL (Cloudinary, TikTok, YouTube, or MP4)</label>
+      <input type="url" id="propTiktok" placeholder="Paste video URL">
+      <input type="file" id="addVideoFile" accept="video/*" style="display:none;" onchange="uploadVideoFromPhone(event, 'propTiktok')">
+      <button type="button" class="btn-video" style="width:100%; margin-top:8px;" onclick="document.getElementById('addVideoFile').click()">
+        📹 Upload Video from Phone
+      </button>
+      <button type="button" class="btn-tiktok" style="width:100%; margin-top:8px;" onclick="downloadFromTikTok('propTiktok')">
+        📥 Download & Save from TikTok
+      </button>
+      <div class="upload-progress" id="addVideoProgress">
+        <div class="bar"><div class="fill" id="addVideoProgressFill"></div></div>
+        <div class="label" id="addVideoProgressLabel">Preparing...</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Property Photos (Optional if video is provided)</label>
+      <label class="image-upload" for="propImages">
+        <input type="file" id="propImages" accept="image/*" multiple onchange="handleImageSelect(event)">
+        <div class="upload-icon">📷</div>
+        <div class="upload-text">Tap to select photos from your gallery</div>
+      </label>
+      <div class="image-preview" id="imagePreview"></div>
+    </div>
+
+    <button class="btn btn-primary" style="width: 100%; padding: 15px; margin-top: 6px; font-size:14px;" id="addPropBtn" onclick="addProperty()">
+      🚀 Add Property
+    </button>
+  </div>
+</div>
+
+<div class="panel" id="panel-properties">
+  <div class="section-header">
+    <h2>🏠 My Listed Properties</h2>
+    <span class="count" id="propListCount">-</span>
+  </div>
+
+  <div class="bulk-delete-bar" id="bulkDeleteBar">
+    <div class="info">
+      <span>🗑️</span>
+      <span>Selected:</span>
+      <span class="count-pill" id="selectedCount">0</span>
+    </div>
+    <div class="actions">
+      <button class="btn btn-outline" onclick="deselectAll()">✕ Deselect</button>
+      <button class="btn btn-danger" onclick="deleteSelectedProperties()">🗑️ Delete Selected</button>
+    </div>
+  </div>
+
+  <label class="select-all-row" id="selectAllRow" onclick="toggleSelectAll(event)">
+    <input type="checkbox" id="selectAllCheckbox">
+    <span class="label">Select All</span>
+  </label>
+
+  <div id="propertiesList">
+    <div class="loading"><div class="spinner"></div>Loading...</div>
+  </div>
+</div>  <div class="panel" id="panel-landmarks">
+    <div class="section-header">
+      <h2>🗺️ Landmark Manager</h2>
+      <span class="count" id="landmarkCount">-</span>
+    </div>
+
+    <div class="form-card">
+      <h3>➕ Add Single Landmark</h3>
+      <div class="alert err" id="addLandmarkError"></div>
+      <div class="alert ok" id="addLandmarkSuccess"></div>
+
+      <div class="field">
+        <label>Landmark Name *</label>
+        <input type="text" id="lmName" placeholder="e.g., Utalii College">
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Area / Neighbourhood</label>
+          <input type="text" id="lmArea" placeholder="e.g., Ngara">
+        </div>
+        <div class="field">
+          <label>Region *</label>
+          <select id="lmRegion">
+            <option value="Nairobi">Nairobi</option>
+            <option value="Kiambu">Kiambu</option>
+            <option value="Thika">Thika</option>
+            <option value="Mombasa">Mombasa</option>
+            <option value="Nakuru">Nakuru</option>
+            <option value="Kisumu">Kisumu</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Category</label>
+        <select id="lmCategory">
+          <option value="university">🎓 University / College</option>
+          <option value="hospital">🏥 Hospital / Clinic</option>
+          <option value="mall">🛍️ Mall / Shopping Centre</option>
+          <option value="school">🏫 School</option>
+          <option value="neighbourhood">🏘️ Neighbourhood / Area</option>
+          <option value="transport">🚉 Transport Hub</option>
+          <option value="church">⛪ Church</option>
+          <option value="mosque">🕌 Mosque</option>
+          <option value="hotel">🏨 Hotel</option>
+          <option value="park">🌳 Park / Nature</option>
+          <option value="government">🏛️ Government Office</option>
+          <option value="other">📍 Other</option>
+        </select>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Latitude (Optional)</label>
+          <input type="text" id="lmLat" placeholder="e.g., -1.2833">
+        </div>
+        <div class="field">
+          <label>Longitude (Optional)</label>
+          <input type="text" id="lmLng" placeholder="e.g., 36.8333">
+        </div>
+      </div>
+
+      <button class="btn btn-primary" style="width: 100%; padding: 14px;" id="addLandmarkBtn" onclick="addLandmark()">
+        💾 Save Landmark
+      </button>
+    </div>
+
+    <div class="form-card">
+      <h3>📚 Bulk Paste Landmarks</h3>
+      <div class="alert err" id="bulkLandmarkError"></div>
+      <div class="alert ok" id="bulkLandmarkSuccess"></div>
+      <div class="alert info" style="display: block; font-size: 12px;">
+        <b>Format (one per line):</b><br>
+        <code style="background:white; padding:2px 6px; border-radius:4px; font-size:11px;">Name, Area, Region, Lat, Lng, Category</code>
+      </div>
+      <div class="field">
+        <label>Paste Landmarks</label>
+        <textarea id="bulkLandmarkText" style="min-height: 150px; font-family: monospace;" placeholder="Utalii College, Ngara, Nairobi, -1.2833, 36.8333, university"></textarea>
+      </div>
+      <button class="btn btn-primary" style="width: 100%; padding: 14px;" id="bulkLandmarkBtn" onclick="bulkAddLandmarks()">
+        📥 Parse & Save All
+      </button>
+    </div>
+
+    <div class="section-header" style="margin-top: 20px;">
+      <h2>📍 All Landmarks</h2>
+      <input type="text" id="landmarkSearch" placeholder="Search..." oninput="filterLandmarks()" style="width: 180px; padding: 9px 12px; border-radius: 8px; background: white; border: 1px solid var(--border-dark); color: var(--text); font-size: 13px;">
+    </div>
+    <div id="landmarksList">
+      <div class="loading"><div class="spinner"></div>Loading landmarks...</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h2>✏️ Edit Property</h2>
+    <p>Update property details and photos</p>
+    <div class="alert err" id="editError"></div>
+    <div class="alert ok" id="editSuccess"></div>
+
+    <input type="hidden" id="editId">
+
+    <div class="field">
+      <label>Property Title *</label>
+      <input type="text" id="editTitle">
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Location *</label>
+        <input type="text" id="editLocation">
+      </div>
+      <div class="field">
+        <label>Price (KES) *</label>
+        <input type="number" id="editPrice">
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Bedrooms</label>
+        <input type="number" id="editBedrooms">
+      </div>
+      <div class="field">
+        <label>Bathrooms</label>
+        <input type="number" id="editBathrooms">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Type</label>
+      <select id="editType">
+        <option value="rent">For Rent</option>
+        <option value="sale">For Sale</option>
+      </select>
+    </div>
+
+    <!-- HOT & TRENDING CHECKBOX (NEW) -->
+    <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; margin-bottom:14px; cursor:pointer;">
+      <input type="checkbox" id="editIsHot" style="width:20px; height:20px; accent-color:#1a6b3c;">
+      <span style="font-size:13px; font-weight:700; color:#1a6b3c;">🔥 Mark as Hot & Trending (Featured)</span>
+    </label>    <div class="field">
+      <label>Description <span id="editDescBadge"></span></label>
+      <textarea id="editDescription"></textarea>
+      <button type="button" class="btn-ai-desc" id="editGenDescBtn" onclick="regenerateDescription()">
+        ✨ Regenerate with AI
+      </button>
+      <div class="alert info" id="editDescInfo" style="margin-top: 10px; font-size: 12px;"></div>
+    </div>
+
+    <div class="field">
+      <label>📞 Agent Phone Number (Optional)</label>
+      <input type="tel" id="editAgentPhone" placeholder="e.g., 0712345678">
+    </div>
+
+    <div style="background:var(--accent-light); padding:14px; border-radius:12px; margin-bottom:16px; border:1px solid rgba(59,130,246,0.25);">
+      <div style="font-size:12.5px; color:var(--accent-dark); font-weight:800; margin-bottom:10px;">
+        🏠 Landlord Information
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Landlord Name</label>
+        <input type="text" id="editLandlordName" placeholder="e.g., Peter Kamau">
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Landlord Phone</label>
+        <input type="tel" id="editLandlordPhone" placeholder="e.g., 0722334455">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Landlord Email (Optional)</label>
+        <input type="email" id="editLandlordEmail" placeholder="e.g., peter@gmail.com">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>🎬 Video Tour URL (Cloudinary, TikTok, YouTube, or MP4)</label>
+      <input type="url" id="editTiktok" placeholder="Paste video URL or upload below">
+      <input type="file" id="editVideoFile" accept="video/*" style="display:none;" onchange="uploadVideoFromPhone(event, 'editTiktok')">
+      <button type="button" class="btn-video" style="width:100%; margin-top:8px;" onclick="document.getElementById('editVideoFile').click()">
+        📹 Upload Video from Phone
+      </button>
+      <button type="button" class="btn-tiktok" style="width:100%; margin-top:8px;" onclick="downloadFromTikTok('editTiktok')">
+        📥 Download & Save from TikTok
+      </button>
+      <div class="upload-progress" id="editVideoProgress">
+        <div class="bar"><div class="fill" id="editVideoProgressFill"></div></div>
+        <div class="label" id="editVideoProgressLabel">Preparing...</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>📷 Replace Photos</label>
+
+      <label class="image-upload" for="editImages">
+        <input type="file" id="editImages" accept="image/*" multiple onchange="handleEditImageSelect(event)">
+        <div class="upload-icon">📁</div>
+        <div class="upload-text">Tap to upload from your phone</div>
+      </label>
+
+      <div style="text-align: center; margin: 14px 0; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: 1px;">— OR —</div>
+
+      <input type="url" id="editImageUrl" placeholder="Paste image URL">
+      <button type="button" class="btn btn-outline" style="width: 100%; margin-top: 8px; padding: 11px; font-size: 12px;" onclick="addImageFromUrl()">
+        ➕ Add Photo from URL
+      </button>
+
+      <div class="image-preview" id="editImagePreview"></div>
+
+      <div style="margin-top: 14px; font-size: 11.5px; color: var(--muted); font-weight: 600;">Current photos:</div>
+      <div class="image-preview" id="editCurrentImages"></div>
+
+      <div class="ai-box">
+        <div class="ai-header">🤖 AI Photo Generator</div>
+        <input type="text" id="aiPrompt" placeholder="e.g., modern bedsitter in Nairobi" style="width:100%; padding:11px 13px; border-radius:10px; background:white; border:1px solid var(--border-dark); color:var(--text); font-size:13.5px; outline:none; font-family:inherit;">
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+          <button type="button" class="btn btn-outline" style="flex: 1; padding: 11px; font-size: 12px;" onclick="autoPrompt()">✨ Auto-Fill</button>
+          <button type="button" class="btn btn-ai" style="flex: 2; padding: 11px; font-size: 12px;" id="aiGenBtn" onclick="generateAIPhoto()">🎨 Generate</button>
+        </div>
+        <div class="ai-preview" id="aiPreview"></div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width: 100%; padding: 15px; margin-top: 10px; font-size:14px;" id="editSaveBtn" onclick="saveEdit()">
+      💾 Save Changes
+    </button>
+    <button class="btn btn-outline" style="width: 100%; margin-top: 10px; padding: 13px;" onclick="closeModal('editModal')">
+      Cancel
+    </button>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'https://house-hunt-server.onrender.com';
+
+let state = {
+  token: localStorage.getItem('hh_token') || null,
+  user: JSON.parse(localStorage.getItem('hh_user') || 'null'),
+  allEnquiries: [],
+  allProperties: [],
+  allLandmarks: [],
+  currentEnquiryFilter: 'all',
+  selectedImages: [],
+  editImages: [],
+  aiGeneratedImage: null,
+  selectedPropertyIds: new Set()
+};
+
+async function api(path, options = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
+  const res = await fetch(API_BASE + path, { ...options, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+function checkAuth() {
+  const gate = document.getElementById('loginGate');
+  if (!state.token || !state.user || (state.user.role !== 'admin' && state.user.role !== 'agent')) {
+    gate.style.display = 'flex'; return false;
+  }
+  gate.style.display = 'none';
+  document.getElementById('userName').textContent = state.user.name;
+  document.getElementById('userRole').textContent = state.user.role;
+  return true;
+}
+
+function logout() {
+  localStorage.removeItem('hh_token');
+  localStorage.removeItem('hh_user');
+  window.location.href = '/';
+}
+
+function switchTab(btn, tabName) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + tabName).classList.add('active');
+
+  if (tabName === 'bookings') loadEnquiries();
+  if (tabName === 'properties') loadMyProperties();
+  if (tabName === 'landmarks') loadLandmarks();
+}
+
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+});async function loadEnquiries() {
+  const list = document.getElementById('enquiriesList');
+  const count = document.getElementById('enquiryCount');
+  const errEl = document.getElementById('enquiriesError');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div>Loading enquiries...</div>';
+  errEl.style.display = 'none';
+
+  try {
+    const res = await api('/api/admin/enquiries?limit=200');
+    state.allEnquiries = res.enquiries || [];
+    count.textContent = state.allEnquiries.length + ' enquir' + (state.allEnquiries.length !== 1 ? 'ies' : 'y');
+    renderEnquiries();
+  } catch (e) {
+    errEl.textContent = 'Failed: ' + e.message;
+    errEl.style.display = 'block';
+    list.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>Failed to load enquiries</div>';
+  }
+}
+
+function filterEnquiries(btn, filter) {
+  document.querySelectorAll('#enquiryFilters .filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  state.currentEnquiryFilter = filter;
+  renderEnquiries();
+}
+
+function renderEnquiries() {
+  const list = document.getElementById('enquiriesList');
+  let items = state.allEnquiries.slice();
+
+  if (state.currentEnquiryFilter === 'viewing') items = items.filter(e => e.type === 'viewing');
+  else if (state.currentEnquiryFilter === 'landlord') items = items.filter(e => e.type === 'landlord');
+  else if (state.currentEnquiryFilter === 'new') items = items.filter(e => e.status === 'new');
+  else if (state.currentEnquiryFilter === 'handled') items = items.filter(e => e.status === 'handled');
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">📭</div>No enquiries found</div>';
+    return;
+  }
+
+  list.innerHTML = items.map(e => {
+    const typeBadge = e.type === 'viewing'
+      ? '<span class="enquiry-status-badge status-viewing">📅 Viewing</span>'
+      : '<span class="enquiry-status-badge status-landlord">📞 Landlord</span>';
+    const statusBadge = e.status === 'handled'
+      ? '<span class="enquiry-status-badge status-handled">✅ Handled</span>'
+      : '<span class="enquiry-status-badge status-new">🔵 New</span>';
+    const canHandle = e.status !== 'handled';
+    const timeAgo = formatTimeAgo(e.created_at);
+
+    return `
+      <div class="enquiry-item">
+        <div class="enquiry-head">
+          <div>
+            <div class="enquiry-ref">${escapeHtml(e.reference)}</div>
+            <div class="enquiry-customer">👤 <b>${escapeHtml(e.tenant_name)}</b> · 📞 ${escapeHtml(e.tenant_phone)}</div>
+          </div>
+          <div style="text-align:right; display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+            ${typeBadge}${statusBadge}
+          </div>
+        </div>
+        <div class="enquiry-grid">
+          ${e.property_title ? `<div><span class="label">Property</span><span class="value">${escapeHtml(e.property_title)}</span></div>` : ''}
+          ${e.property_location ? `<div><span class="label">Location</span><span class="value">📍 ${escapeHtml(e.property_location)}</span></div>` : ''}
+          ${e.preferred_date ? `<div><span class="label">Preferred Date</span><span class="value">${escapeHtml(e.preferred_date)}${e.preferred_time ? ' · ' + escapeHtml(e.preferred_time) : ''}</span></div>` : ''}
+          ${e.move_in_date ? `<div><span class="label">Move-in</span><span class="value">${escapeHtml(e.move_in_date)}</span></div>` : ''}
+          ${e.landlord_name ? `<div><span class="label">Landlord</span><span class="value">${escapeHtml(e.landlord_name)}</span></div>` : ''}
+          <div><span class="label">Received</span><span class="value">${timeAgo}</span></div>
+        </div>
+        ${e.message ? `<div class="enquiry-msg">💬 "${escapeHtml(e.message)}"</div>` : ''}
+        <div class="enquiry-actions">
+          <a href="tel:${escapeHtml(e.tenant_phone)}" class="btn btn-assign" style="text-decoration:none;">📞 Call Tenant</a>
+          <a href="https://wa.me/${e.tenant_phone.replace(/\D/g, '').replace(/^0/, '254')}?text=Hi%20${encodeURIComponent(e.tenant_name)}%2C%20regarding%20your%20enquiry%20${encodeURIComponent(e.reference)}..." target="_blank" rel="noopener" class="btn btn-verify" style="text-decoration:none;">💬 WhatsApp</a>
+          ${canHandle ? `<button class="btn btn-complete" onclick="markEnquiryHandled('${e.id}')">✅ Mark Handled</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return '—';
+  const now = new Date();
+  const d = new Date(dateStr);
+  const diffSec = Math.floor((now - d) / 1000);
+  if (diffSec < 60) return 'Just now';
+  if (diffSec < 3600) return Math.floor(diffSec / 60) + ' min ago';
+  if (diffSec < 86400) return Math.floor(diffSec / 3600) + ' hrs ago';
+  if (diffSec < 172800) return 'Yesterday';
+  return Math.floor(diffSec / 86400) + ' days ago';
+}
+
+async function markEnquiryHandled(id) {
+  if (!confirm('Mark this enquiry as handled?')) return;
+  try {
+    await api('/api/admin/enquiries/' + id + '/handle', { method: 'POST' });
+    loadEnquiries();
+  } catch (e) { alert('Failed: ' + e.message); }
+}function handleImageSelect(event) {
+  const files = Array.from(event.target.files);
+  const remaining = 5 - state.selectedImages.length;
+  files.slice(0, remaining).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      state.selectedImages.push(e.target.result);
+      renderImagePreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderImagePreviews() {
+  document.getElementById('imagePreview').innerHTML = state.selectedImages.map((img, i) => `
+    <div class="preview-item">
+      <img src="${img}">
+      <button class="remove" onclick="removeImage(${i})">×</button>
+    </div>
+  `).join('');
+}
+
+function removeImage(i) { state.selectedImages.splice(i, 1); renderImagePreviews(); }
+
+async function uploadVideoFromPhone(event, targetInputId) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  event.target.value = '';
+  const isEdit = targetInputId === 'editTiktok';
+  const progressBox = document.getElementById(isEdit ? 'editVideoProgress' : 'addVideoProgress');
+  const progressFill = document.getElementById(isEdit ? 'editVideoProgressFill' : 'addVideoProgressFill');
+  const progressLabel = document.getElementById(isEdit ? 'editVideoProgressLabel' : 'addVideoProgressLabel');
+  const errEl = document.getElementById(isEdit ? 'editError' : 'addPropError');
+  const maxBytes = 20 * 1024 * 1024;
+  if (file.size > maxBytes) {
+    if (errEl) { errEl.textContent = `Video too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum 20 MB.`; errEl.style.display = 'block'; }
+    return;
+  }
+  progressBox.classList.add('show');
+  progressFill.style.width = '10%';
+  progressLabel.textContent = 'Reading video...';
+  try {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Failed to read video'));
+      reader.readAsDataURL(file);
+    });
+    progressFill.style.width = '30%';
+    progressLabel.textContent = 'Uploading to Cloudinary...';
+    let fakeProgress = 30;
+    const fakeTimer = setInterval(() => { fakeProgress = Math.min(fakeProgress + 3, 90); progressFill.style.width = fakeProgress + '%'; }, 500);
+    const res = await api('/api/upload-video', { method: 'POST', body: JSON.stringify({ video: base64, mimeType: file.type || 'video/mp4' }) });
+    clearInterval(fakeTimer);
+    progressFill.style.width = '100%';
+    progressLabel.textContent = `✅ Uploaded to account ${res.account}`;
+    document.getElementById(targetInputId).value = res.url;
+    setTimeout(() => { progressBox.classList.remove('show'); progressFill.style.width = '0%'; }, 2000);
+    if (errEl) errEl.style.display = 'none';
+  } catch (e) {
+    progressBox.classList.remove('show'); progressFill.style.width = '0%';
+    if (errEl) { errEl.textContent = 'Video upload failed: ' + e.message; errEl.style.display = 'block'; }
+  }
+}
+
+async function downloadFromTikTok(targetInputId) {
+  const urlInput = document.getElementById(targetInputId);
+  const url = urlInput.value.trim();
+  if (!url || (!url.includes('tiktok.com') && !url.includes('vt.tiktok'))) { alert('Please paste a TikTok URL first.'); return; }
+  const isEdit = targetInputId === 'editTiktok';
+  const progressBox = document.getElementById(isEdit ? 'editVideoProgress' : 'addVideoProgress');
+  const progressFill = document.getElementById(isEdit ? 'editVideoProgressFill' : 'addVideoProgressFill');
+  const progressLabel = document.getElementById(isEdit ? 'editVideoProgressLabel' : 'addVideoProgressLabel');
+  const errEl = document.getElementById(isEdit ? 'editError' : 'addPropError');
+  progressBox.classList.add('show');
+  progressFill.style.width = '15%';
+  progressLabel.textContent = '📥 Connecting to TikTok...';
+  let fakeProgress = 15;
+  const fakeTimer = setInterval(() => {
+    fakeProgress = Math.min(fakeProgress + 2, 90);
+    progressFill.style.width = fakeProgress + '%';
+    if (fakeProgress < 40) progressLabel.textContent = '📥 Downloading from TikTok...';
+    else if (fakeProgress < 70) progressLabel.textContent = '☁️ Uploading to Cloudinary...';
+    else progressLabel.textContent = '✨ Almost done...';
+  }, 500);
+  try {
+    const res = await api('/api/download-tiktok', { method: 'POST', body: JSON.stringify({ tiktok_url: url }) });
+    clearInterval(fakeTimer);
+    progressFill.style.width = '100%';
+    progressLabel.textContent = `✅ Saved! (${res.size_mb} MB)`;
+    urlInput.value = res.url;
+    if (errEl) errEl.style.display = 'none';
+    setTimeout(() => { progressBox.classList.remove('show'); progressFill.style.width = '0%'; }, 2500);
+  } catch (e) {
+    clearInterval(fakeTimer); progressBox.classList.remove('show'); progressFill.style.width = '0%';
+    if (errEl) { errEl.textContent = 'TikTok download failed: ' + e.message; errEl.style.display = 'block'; }
+  }
+}
+
+async function generateDescForAdd() {
+  const btn = document.getElementById('propGenDescBtn');
+  const title = document.getElementById('propTitle').value.trim();
+  const location = document.getElementById('propLocation').value.trim();
+  if (!title && !location) { alert('Fill Title and Location first'); return; }
+  btn.disabled = true; btn.textContent = '⏳ Writing...';
+  try {
+    const res = await api('/api/generate-description', { method: 'POST', body: JSON.stringify({ title: title || 'Property', location: location || 'Kenya', price: Number(document.getElementById('propPrice').value) || 0, bedrooms: Number(document.getElementById('propBedrooms').value) || 0, bathrooms: Number(document.getElementById('propBathrooms').value) || 1, type: document.getElementById('propType').value, landmarks: [] }) });
+    if (res.ok && res.description) document.getElementById('propDescription').value = res.description;
+  } catch (e) { alert('Failed: ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = '✨ Generate Description with AI'; }
+}
+
+async function addProperty() {
+  const errEl = document.getElementById('addPropError');
+  const okEl = document.getElementById('addPropSuccess');
+  const btn = document.getElementById('addPropBtn');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  const title = document.getElementById('propTitle').value.trim();
+  const location = document.getElementById('propLocation').value.trim();
+  const price = document.getElementById('propPrice').value;
+  const videoUrl = document.getElementById('propTiktok').value.trim();
+  const landlordName = document.getElementById('propLandlordName').value.trim();
+  const landlordPhone = document.getElementById('propLandlordPhone').value.trim();
+  const landlordEmail = document.getElementById('propLandlordEmail').value.trim();
+  const hasPhotos = state.selectedImages.length > 0;
+  const hasVideo = videoUrl !== '';
+  if (!title || !location || !price) { errEl.textContent = 'Please fill Title, Location, and Price'; errEl.style.display = 'block'; return; }
+  if (!landlordName || !landlordPhone) { errEl.textContent = 'Landlord name and phone are required'; errEl.style.display = 'block'; return; }
+  if (!hasPhotos && !hasVideo) { errEl.textContent = 'Please add at least 1 photo OR a video URL'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = '⏳ Saving...';
+  try {
+    await api('/api/properties', { method: 'POST', body: JSON.stringify({ title, location, price, bedrooms: document.getElementById('propBedrooms').value, bathrooms: document.getElementById('propBathrooms').value, type: document.getElementById('propType').value, description: document.getElementById('propDescription').value.trim(), tiktok_url: videoUrl || null, agent_phone: document.getElementById('propAgentPhone').value.trim() || null, landlord_name: landlordName, landlord_phone: landlordPhone, landlord_email: landlordEmail || null, images: state.selectedImages }) });
+    okEl.textContent = '✅ Property added!'; okEl.style.display = 'block';
+    ['propTitle','propLocation','propPrice','propBedrooms','propBathrooms','propDescription','propTiktok','propAgentPhone','propLandlordName','propLandlordPhone','propLandlordEmail'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    state.selectedImages = []; renderImagePreviews();
+  } catch (e) { errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = '🚀 Add Property'; }
+}async function loadMyProperties() {
+  const list = document.getElementById('propertiesList');
+  const count = document.getElementById('propListCount');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+  try {
+    const res = await api('/api/properties/all');
+    state.allProperties = res.properties || [];
+    count.textContent = state.allProperties.length + ' listing' + (state.allProperties.length !== 1 ? 's' : '');
+    renderMyProperties();
+  } catch (e) { list.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>Failed: ' + e.message + '</div>'; }
+}
+
+function renderMyProperties() {
+  const list = document.getElementById('propertiesList');
+  if (state.allProperties.length === 0) { list.innerHTML = '<div class="empty-state"><div class="icon">🏘️</div>No properties yet</div>'; return; }
+  list.innerHTML = state.allProperties.map(p => {
+    const img = (p.images && p.images[0]) ? p.images[0] : 'https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png';
+    const isRented = p.status === 'rented';
+    const statusBadge = isRented ? '<span class="prop-status-badge rented">● Rented</span>' : '<span class="prop-status-badge available">● Available</span>';
+    const videoBadge = p.tiktok_url ? '<span class="video-badge">🎬 Video</span>' : '';
+    const hotBadge = (p.isHot === true || p.isHot === 'true') ? '<span class="hot-badge">🔥 HOT</span>' : '';
+    const isSelected = state.selectedPropertyIds.has(p.id);
+    const landlordInfo = p.landlord_name ? `<p style="font-size:11.5px; color:var(--muted);">🏠 Landlord: <b>${escapeHtml(p.landlord_name)}</b> · ${escapeHtml(p.landlord_phone || '')}</p>` : '';
+
+    return `
+      <div class="property-item">
+        <div class="prop-checkbox-wrap">
+          <input type="checkbox" class="prop-checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); togglePropertySelect('${p.id}', this)">
+        </div>
+        <img class="prop-img" src="${img}" alt="">
+        <div class="info">
+          <h4>${escapeHtml(p.title)} ${hotBadge} ${videoBadge} ${statusBadge}</h4>
+          <p>📍 ${escapeHtml(p.location)}</p>
+          <p>💰 KES ${Number(p.price).toLocaleString()} • ${p.type.toUpperCase()}</p>
+          <p>🛏️ ${p.bedrooms === 0 ? 'Studio' : p.bedrooms + ' Bed'} • 🚿 ${p.bathrooms} Bath</p>
+          ${landlordInfo}
+          <div class="actions">
+            <button class="btn btn-edit" onclick="openEdit('${p.id}')">✏️ Edit</button>
+            <button class="btn btn-outline" onclick="togglePropertyStatus('${p.id}', '${isRented ? 'available' : 'rented'}')">
+              ${isRented ? '✅ Mark Available' : '🔒 Mark Rented'}
+            </button>
+            <button class="btn btn-danger" onclick="deleteProperty('${p.id}')">🗑️ Delete</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function togglePropertySelect(id, checkbox) {
+  if (checkbox.checked) state.selectedPropertyIds.add(id);
+  else state.selectedPropertyIds.delete(id);
+  updateBulkDeleteBar();
+}
+
+function toggleSelectAll(event) {
+  event.preventDefault();
+  const checkbox = document.getElementById('selectAllCheckbox');
+  const shouldSelectAll = !checkbox.checked;
+  if (shouldSelectAll) state.allProperties.forEach(p => state.selectedPropertyIds.add(p.id));
+  else state.selectedPropertyIds.clear();
+  checkbox.checked = shouldSelectAll;
+  renderMyProperties(); updateBulkDeleteBar();
+}
+
+function deselectAll() {
+  state.selectedPropertyIds.clear();
+  document.getElementById('selectAllCheckbox').checked = false;
+  renderMyProperties(); updateBulkDeleteBar();
+}
+
+function updateBulkDeleteBar() {
+  const bar = document.getElementById('bulkDeleteBar');
+  const count = document.getElementById('selectedCount');
+  const total = state.selectedPropertyIds.size;
+  if (total > 0) { bar.classList.add('show'); count.textContent = total; }
+  else { bar.classList.remove('show'); }
+}
+
+async function deleteSelectedProperties() {
+  const ids = Array.from(state.selectedPropertyIds);
+  if (ids.length === 0) return;
+  const names = state.allProperties.filter(p => ids.includes(p.id)).map(p => '• ' + p.title).slice(0, 5).join('\n');
+  const confirmMsg = `Delete ${ids.length} propert${ids.length === 1 ? 'y' : 'ies'}?\n\n${names}${ids.length > 5 ? '\n• and ' + (ids.length - 5) + ' more...' : ''}\n\n⚠️ This cannot be undone.`;
+  if (!confirm(confirmMsg)) return;
+  try {
+    const res = await api('/api/properties/bulk-delete', { method: 'POST', body: JSON.stringify({ ids }) });
+    alert('✅ ' + res.message);
+    state.selectedPropertyIds.clear();
+    document.getElementById('selectAllCheckbox').checked = false;
+    loadMyProperties();
+  } catch (e) { alert('Failed: ' + e.message); }
+}
+
+async function deleteProperty(id) {
+  if (!confirm('Delete this property?')) return;
+  try {
+    await api('/api/properties/' + id, { method: 'DELETE' });
+    state.selectedPropertyIds.delete(id);
+    loadMyProperties();
+  } catch (e) { alert('Failed: ' + e.message); }
+}
+
+async function togglePropertyStatus(id, newStatus) {
+  try {
+    await api('/api/properties/' + id + '/status', { method: 'POST', body: JSON.stringify({ status: newStatus }) });
+    loadMyProperties();
+  } catch (e) { alert('Failed: ' + e.message); }
+}
+
+function openEdit(id) {
+  const p = state.allProperties.find(x => x.id === id);
+  if (!p) return;
+  state.editImages = []; state.aiGeneratedImage = null;
+  document.getElementById('editId').value = p.id;
+  document.getElementById('editTitle').value = p.title || '';
+  document.getElementById('editLocation').value = p.location || '';
+  document.getElementById('editPrice').value = p.price || '';
+  document.getElementById('editBedrooms').value = p.bedrooms || 0;
+  document.getElementById('editBathrooms').value = p.bathrooms || 0;
+  document.getElementById('editType').value = p.type || 'rent';
+  document.getElementById('editDescription').value = p.description || '';
+  document.getElementById('editTiktok').value = p.tiktok_url || '';
+  document.getElementById('editAgentPhone').value = p.agent_phone || '';
+  document.getElementById('editLandlordName').value = p.landlord_name || '';
+  document.getElementById('editLandlordPhone').value = p.landlord_phone || '';
+  document.getElementById('editLandlordEmail').value = p.landlord_email || '';
+  document.getElementById('editIsHot').checked = (p.isHot === true || p.isHot === 'true');
+  document.getElementById('editError').style.display = 'none';
+  document.getElementById('editSuccess').style.display = 'none';
+  document.getElementById('editDescInfo').style.display = 'none';
+  document.getElementById('editDescBadge').innerHTML = '';
+  document.getElementById('editVideoProgress').classList.remove('show');
+  document.getElementById('editCurrentImages').innerHTML = (p.images && p.images.length) ? p.images.map(img => `<div class="preview-item"><img src="${img}"></div>`).join('') : '<div style="font-size:11.5px;color:var(--muted);">No photos</div>';
+  document.getElementById('editImagePreview').innerHTML = '';
+  document.getElementById('editImageUrl').value = '';
+  document.getElementById('aiPrompt').value = '';
+  document.getElementById('aiPreview').innerHTML = '';
+  openModal('editModal');
+}function handleEditImageSelect(event) {
+  const files = Array.from(event.target.files);
+  const remaining = 5 - state.editImages.length;
+  files.slice(0, remaining).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => { state.editImages.push(e.target.result); renderEditImagePreviews(); };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderEditImagePreviews() {
+  document.getElementById('editImagePreview').innerHTML = state.editImages.map((img, i) => `
+    <div class="preview-item">
+      <img src="${img}">
+      <button class="remove" onclick="removeEditImage(${i})">×</button>
+    </div>
+  `).join('');
+}
+
+function removeEditImage(i) { state.editImages.splice(i, 1); renderEditImagePreviews(); }
+
+function addImageFromUrl() {
+  const url = document.getElementById('editImageUrl').value.trim();
+  if (!url || !url.startsWith('http')) { alert('Enter valid URL'); return; }
+  if (state.editImages.length >= 5) { alert('Max 5 photos'); return; }
+  state.editImages.push(url); renderEditImagePreviews();
+  document.getElementById('editImageUrl').value = '';
+}
+
+function autoPrompt() {
+  const title = document.getElementById('editTitle').value.trim();
+  const location = document.getElementById('editLocation').value.trim();
+  if (!title && !location) { alert('Fill Title and Location first'); return; }
+  document.getElementById('aiPrompt').value = [title, location ? 'in ' + location : '', 'professional real estate photograph'].filter(Boolean).join(', ');
+}
+
+async function generateAIPhoto() {
+  const prompt = document.getElementById('aiPrompt').value.trim();
+  const btn = document.getElementById('aiGenBtn');
+  const preview = document.getElementById('aiPreview');
+  const errEl = document.getElementById('editError');
+  if (!prompt) { alert('Enter a prompt'); return; }
+  errEl.style.display = 'none';
+  btn.disabled = true; btn.textContent = '🎨 Generating...';
+  preview.innerHTML = '<div class="spinner" style="margin:12px auto;"></div>';
+  try {
+    const res = await api('/api/generate-photo', { method: 'POST', body: JSON.stringify({ prompt }) });
+    if (!res.ok || !res.image) throw new Error('No image');
+    state.aiGeneratedImage = res.image;
+    preview.innerHTML = `<div class="ai-result"><img src="${res.image}"></div><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;"><button class="btn btn-ai" style="padding:9px 12px;font-size:12px;" onclick="useAIPhoto()">✓ Use</button><button class="btn btn-outline" style="padding:9px 12px;font-size:12px;" onclick="generateAIPhoto()">🔄 Again</button></div>`;
+  } catch (e) {
+    preview.innerHTML = ''; errEl.innerHTML = '❌ ' + e.message; errEl.style.display = 'block';
+  } finally { btn.disabled = false; btn.textContent = '🎨 Generate'; }
+}
+
+function useAIPhoto() {
+  if (!state.aiGeneratedImage || state.editImages.length >= 5) return;
+  state.editImages.push(state.aiGeneratedImage);
+  renderEditImagePreviews();
+  document.getElementById('aiPreview').innerHTML = '';
+  state.aiGeneratedImage = null;
+  document.getElementById('aiPrompt').value = '';
+}
+
+async function regenerateDescription() {
+  const btn = document.getElementById('editGenDescBtn');
+  const infoEl = document.getElementById('editDescInfo');
+  const title = document.getElementById('editTitle').value.trim();
+  const location = document.getElementById('editLocation').value.trim();
+  if (!title && !location) { alert('Fill Title and Location first'); return; }
+  btn.disabled = true; btn.textContent = '⏳ Generating...';
+  infoEl.style.display = 'none';
+  try {
+    const res = await api('/api/generate-description', { method: 'POST', body: JSON.stringify({ title: title || 'Property', location: location || 'Kenya', price: Number(document.getElementById('editPrice').value) || 0, bedrooms: Number(document.getElementById('editBedrooms').value) || 0, bathrooms: Number(document.getElementById('editBathrooms').value) || 1, type: document.getElementById('editType').value, landmarks: [] }) });
+    if (res.ok && res.description) {
+      document.getElementById('editDescription').value = res.description;
+      document.getElementById('editDescBadge').innerHTML = '<span class="desc-badge">✨ AI</span>';
+      infoEl.textContent = '✅ New description written.';
+      infoEl.className = 'alert info'; infoEl.style.display = 'block';
+    }
+  } catch (e) {
+    infoEl.textContent = '❌ Failed: ' + e.message;
+    infoEl.className = 'alert err'; infoEl.style.display = 'block';
+  } finally { btn.disabled = false; btn.textContent = '✨ Regenerate with AI'; }
+}
+
+async function saveEdit() {
+  const id = document.getElementById('editId').value;
+  const errEl = document.getElementById('editError');
+  const okEl = document.getElementById('editSuccess');
+  const btn = document.getElementById('editSaveBtn');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  const title = document.getElementById('editTitle').value.trim();
+  const location = document.getElementById('editLocation').value.trim();
+  const price = document.getElementById('editPrice').value;
+  if (!title || !location || !price) { errEl.textContent = 'Title, Location, Price required'; errEl.style.display = 'block'; return; }
+
+  const updateData = {
+    title, location, price,
+    bedrooms: Number(document.getElementById('editBedrooms').value) || 0,
+    bathrooms: Number(document.getElementById('editBathrooms').value) || 0,
+    type: document.getElementById('editType').value,
+    description: document.getElementById('editDescription').value.trim(),
+    tiktok_url: document.getElementById('editTiktok').value.trim() || null,
+    agent_phone: document.getElementById('editAgentPhone').value.trim() || null,
+    landlord_name: document.getElementById('editLandlordName').value.trim() || null,
+    landlord_phone: document.getElementById('editLandlordPhone').value.trim() || null,
+    landlord_email: document.getElementById('editLandlordEmail').value.trim() || null,
+    isHot: document.getElementById('editIsHot').checked
+  };
+  if (state.editImages.length > 0) updateData.images = state.editImages;
+
+  btn.disabled = true; btn.textContent = '💾 Saving...';
+  try {
+    await api('/api/properties/' + id, { method: 'PUT', body: JSON.stringify(updateData) });
+    okEl.textContent = '✅ Updated!'; okEl.style.display = 'block';
+    setTimeout(() => { closeModal('editModal'); loadMyProperties(); }, 1200);
+  } catch (e) {
+    errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = '💾 Save Changes';
+  }
+}
+
+const LANDMARK_ICONS = { university: '🎓', college: '🎓', hospital: '🏥', clinic: '🏥', mall: '🛍️', school: '🏫', neighbourhood: '🏘️', transport: '🚉', church: '⛪', mosque: '🕌', hotel: '🏨', park: '🌳', government: '🏛️', other: '📍' };
+
+async function loadLandmarks() {
+  const list = document.getElementById('landmarksList');
+  const count = document.getElementById('landmarkCount');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+  try {
+    const res = await api('/api/admin/landmarks?limit=200');
+    state.allLandmarks = res.landmarks || [];
+    count.textContent = (res.total || state.allLandmarks.length) + ' landmarks';
+    renderLandmarks();
+  } catch (e) { list.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>Failed: ' + e.message + '</div>'; }
+}
+
+function renderLandmarks() {
+  const list = document.getElementById('landmarksList');
+  const search = (document.getElementById('landmarkSearch').value || '').toLowerCase();
+  let items = state.allLandmarks;
+  if (search) items = items.filter(l => (l.name || '').toLowerCase().includes(search) || (l.area || '').toLowerCase().includes(search));
+  if (items.length === 0) { list.innerHTML = '<div class="empty-state"><div class="icon">📍</div>No landmarks found</div>'; return; }
+  list.innerHTML = items.map(l => `
+    <div class="landmark-item">
+      <div class="landmark-icon">${LANDMARK_ICONS[l.category] || '📍'}</div>
+      <div class="info">
+        <h4>${escapeHtml(l.name)}<span class="landmark-category-tag">${escapeHtml(l.category)}</span></h4>
+        <p>📍 ${escapeHtml(l.area || '—')}, ${escapeHtml(l.region)}</p>
+        ${l.lat && l.lng ? `<p style="font-size:11px;">🌐 ${l.lat}, ${l.lng}</p>` : ''}
+        <div class="actions" style="margin-top:8px;">
+          <button class="btn btn-danger" onclick="deleteLandmark('${l.id}')">🗑️ Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterLandmarks() { renderLandmarks(); }
+
+async function addLandmark() {
+  const errEl = document.getElementById('addLandmarkError');
+  const okEl = document.getElementById('addLandmarkSuccess');
+  const btn = document.getElementById('addLandmarkBtn');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  const name = document.getElementById('lmName').value.trim();
+  if (!name) { errEl.textContent = 'Name required'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = '⏳ Saving...';
+  try {
+    await api('/api/admin/landmarks', { method: 'POST', body: JSON.stringify({ name, area: document.getElementById('lmArea').value.trim(), region: document.getElementById('lmRegion').value, category: document.getElementById('lmCategory').value, lat: document.getElementById('lmLat').value.trim() || null, lng: document.getElementById('lmLng').value.trim() || null }) });
+    okEl.textContent = '✅ Landmark saved!'; okEl.style.display = 'block';
+    ['lmName', 'lmArea', 'lmLat', 'lmLng'].forEach(id => document.getElementById(id).value = '');
+    loadLandmarks();
+  } catch (e) { errEl.textContent = e.message; errEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = '💾 Save Landmark'; }
+}
+
+async function bulkAddLandmarks() {
+  const errEl = document.getElementById('bulkLandmarkError');
+  const okEl = document.getElementById('bulkLandmarkSuccess');
+  const btn = document.getElementById('bulkLandmarkBtn');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  const text = document.getElementById('bulkLandmarkText').value.trim();
+  if (!text) { errEl.textContent = 'Paste landmarks first'; errEl.style.display = 'block'; return; }
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const items = [];
+  for (const line of lines) {
+    const parts = line.split(',').map(p => p.trim());
+    if (parts.length < 2) continue;
+    const item = { name: parts[0] };
+    if (parts.length === 2) item.region = parts[1];
+    else {
+      item.area = parts[1] || null;
+      item.region = parts[2] || 'Nairobi';
+      item.lat = parts[3] ? parseFloat(parts[3]) : null;
+      item.lng = parts[4] ? parseFloat(parts[4]) : null;
+      item.category = parts[5] ? parts[5].toLowerCase() : 'other';
+    }
+    items.push(item);
+  }
+  if (items.length === 0) { errEl.textContent = 'No valid landmarks'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = '⏳ Saving ' + items.length + '...';
+  try {
+    const res = await api('/api/admin/landmarks/bulk', { method: 'POST', body: JSON.stringify({ items }) });
+    okEl.innerHTML = '✅ <b>' + res.inserted + ' saved</b>' + (res.duplicated ? ' • ' + res.duplicated + ' existed' : '') + '<br>Total: <b>' + res.total_in_db + '</b>';
+    okEl.style.display = 'block';
+    document.getElementById('bulkLandmarkText').value = '';
+    loadLandmarks();
+  } catch (e) { errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = '📥 Parse & Save All'; }
+}
+
+async function deleteLandmark(id) {
+  if (!confirm('Delete this landmark?')) return;
+  try { await api('/api/admin/landmarks/' + id, { method: 'DELETE' }); loadLandmarks(); }
+  catch (e) { alert('Failed: ' + e.message); }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (checkAuth()) loadEnquiries();
+});
+</script>
+</body>
+</html>
