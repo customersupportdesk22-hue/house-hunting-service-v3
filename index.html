@@ -772,6 +772,98 @@
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.3); }
 }
+
+/* ============ SEARCH CONTAINER ============ */
+.search-container {
+  background: white;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  max-width: 720px;
+  margin: 0 auto 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.search-row {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 12px;
+  position: relative;
+}
+.search-row .s-icon {
+  font-size: 16px;
+  margin-right: 8px;
+  color: var(--muted);
+}
+.search-row input,
+.search-row select {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 14px;
+  outline: none;
+  color: var(--text);
+  font-family: inherit;
+}
+.search-row select {
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  padding-right: 20px;
+}
+.search-row.select-row::after {
+  content: "▼";
+  font-size: 10px;
+  color: var(--muted);
+  position: absolute;
+  right: 14px;
+  pointer-events: none;
+}
+.search-row select optgroup {
+  font-weight: 800;
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 8px 0;
+}
+.search-row select option {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px;
+}
+.search-actions {
+  display: flex;
+  gap: 8px;
+}
+.btn-search {
+  flex: 1;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+.btn-search:hover { background: var(--accent-dark); }
+.btn-search-reset {
+  background: white;
+  color: var(--muted);
+  border: 1px solid var(--border-dark);
+  border-radius: 10px;
+  padding: 11px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
 </style>
 </head>
 <body> 
@@ -794,11 +886,236 @@
   <h1>Find Your <span>Dream Home</span> in Kenya</h1>
   <p>Verified listings • Connect with agents and landlords directly</p>
 
-  <div class="search-panel">
-    <button class="near-me-btn" id="nearMeBtn" onclick="requestLocationAndFindNearby()">
-      📍 <span id="nearMeBtnText">Find Houses Near Me</span>
-    </button>
+<div class="search-container">
+  <div class="search-row">
+    <span class="s-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search estate, landmark, or house type..." autocomplete="off">
   </div>
+
+  <div class="search-row select-row">
+    <span class="s-icon">📍</span>
+    <select id="locationSelect">
+      <option value="">All Locations</option>
+
+      <optgroup label="━━ NAIROBI — ESTATES ━━">
+        <option value="Westlands">Westlands</option>
+        <option value="Kilimani">Kilimani</option>
+        <option value="Kileleshwa">Kileleshwa</option>
+        <option value="Lavington">Lavington</option>
+        <option value="Karen">Karen</option>
+        <option value="Langata">Langata</option>
+        <option value="Kasarani">Kasarani</option>
+        <option value="Embakasi">Embakasi</option>
+        <option value="Donholm">Donholm</option>
+        <option value="Umoja">Umoja</option>
+        <option value="Kayole">Kayole</option>
+        <option value="Buruburu">Buruburu</option>
+        <option value="South B">South B</option>
+        <option value="South C">South C</option>
+        <option value="Parklands">Parklands</option>
+        <option value="Riverside">Riverside</option>
+        <option value="Runda">Runda</option>
+        <option value="Muthaiga">Muthaiga</option>
+        <option value="Gigiri">Gigiri</option>
+        <option value="Roysambu">Roysambu</option>
+        <option value="Zimmerman">Zimmerman</option>
+        <option value="Kahawa">Kahawa</option>
+        <option value="Kahawa West">Kahawa West</option>
+        <option value="Utawala">Utawala</option>
+        <option value="Ruai">Ruai</option>
+        <option value="Pipeline">Pipeline</option>
+        <option value="Imara Daima">Imara Daima</option>
+        <option value="Kawangware">Kawangware</option>
+        <option value="Dagoretti">Dagoretti</option>
+        <option value="Kangemi">Kangemi</option>
+        <option value="Mountain View">Mountain View</option>
+        <option value="Eastleigh">Eastleigh</option>
+        <option value="Ngara">Ngara</option>
+        <option value="Kitisuru">Kitisuru</option>
+        <option value="Spring Valley">Spring Valley</option>
+        <option value="Loresho">Loresho</option>
+        <option value="Highridge">Highridge</option>
+        <option value="Hurlingham">Hurlingham</option>
+        <option value="Komarock">Komarock</option>
+        <option value="Tassia">Tassia</option>
+        <option value="Syokimau">Syokimau</option>
+        <option value="Athi River">Athi River</option>
+        <option value="Kitengela">Kitengela</option>
+        <option value="Ngong">Ngong</option>
+        <option value="Rongai">Rongai</option>
+        <option value="Ongata Rongai">Ongata Rongai</option>
+        <option value="Kiserian">Kiserian</option>
+      </optgroup>
+
+      <optgroup label="━━ NAIROBI — MALLS ━━">
+        <option value="Sarit Centre">Sarit Centre (Westlands)</option>
+        <option value="Yaya Centre">Yaya Centre (Kilimani)</option>
+        <option value="Two Rivers Mall">Two Rivers Mall (Ruaka)</option>
+        <option value="Garden City Mall">Garden City Mall (Thika Rd)</option>
+        <option value="The Hub Karen">The Hub Karen</option>
+        <option value="Village Market">Village Market (Gigiri)</option>
+        <option value="Westgate Mall">Westgate Mall (Westlands)</option>
+        <option value="The Junction">The Junction (Ngong Rd)</option>
+        <option value="Greenspan Mall">Greenspan Mall (Donholm)</option>
+        <option value="Thika Road Mall">Thika Road Mall (TRM)</option>
+        <option value="T-Mall">T-Mall (Langata)</option>
+        <option value="Capital Centre">Capital Centre (Mombasa Rd)</option>
+        <option value="Nextgen Mall">Nextgen Mall (Mombasa Rd)</option>
+        <option value="Prestige Plaza">Prestige Plaza (Ngong Rd)</option>
+        <option value="Galleria Mall">Galleria Mall (Karen)</option>
+        <option value="Waterfront Mall">Waterfront Mall (Karen)</option>
+        <option value="Diamond Plaza">Diamond Plaza (Parklands)</option>
+        <option value="City Mall">City Mall (Mombasa Rd)</option>
+        <option value="Sky Mall">Sky Mall (Embakasi)</option>
+        <option value="China Square">China Square (Kilimani)</option>
+        <option value="Nakumatt Junction">Nakumatt Junction</option>
+        <option value="Karen Hub">Karen Hub</option>
+      </optgroup>
+
+      <optgroup label="━━ NAIROBI — MATATU STAGES ━━">
+        <option value="Railways">Railways Bus Station</option>
+        <option value="Country Bus">Country Bus Station</option>
+        <option value="Odeon">Odeon Cinema Stage</option>
+        <option value="Kencom">Kencom Stage</option>
+        <option value="Ambassadeur">Ambassadeur Stage</option>
+        <option value="Koja">Koja Stage</option>
+        <option value="Bus Station">Bus Station CBD</option>
+        <option value="Ngara Stage">Ngara Stage</option>
+        <option value="Westlands Stage">Westlands Stage</option>
+        <option value="Kikuyu Stage">Kikuyu Stage</option>
+        <option value="Kawangware Stage">Kawangware Stage</option>
+        <option value="Rongai Stage">Rongai Stage</option>
+        <option value="Ngong Stage">Ngong Stage</option>
+        <option value="Kitengela Stage">Kitengela Stage</option>
+        <option value="Athi River Stage">Athi River Stage</option>
+        <option value="Thika Stage">Thika Stage</option>
+        <option value="Githurai Stage">Githurai Stage</option>
+        <option value="Kahawa Stage">Kahawa Stage</option>
+        <option value="Kasarani Stage">Kasarani Stage</option>
+        <option value="Mwiki Stage">Mwiki Stage</option>
+        <option value="Utawala Stage">Utawala Stage</option>
+        <option value="Ruai Stage">Ruai Stage</option>
+        <option value="Kayole Stage">Kayole Stage</option>
+        <option value="Umoja Stage">Umoja Stage</option>
+        <option value="Donholm Stage">Donholm Stage</option>
+        <option value="Embakasi Stage">Embakasi Stage</option>
+        <option value="Pipeline Stage">Pipeline Stage</option>
+        <option value="South B Stage">South B Stage</option>
+        <option value="Langata Stage">Langata Stage</option>
+        <option value="Karen Stage">Karen Stage</option>
+      </optgroup>
+
+      <optgroup label="━━ NAIROBI — UNIVERSITIES & COLLEGES ━━">
+        <option value="University of Nairobi">University of Nairobi (UoN)</option>
+        <option value="Kenyatta University">Kenyatta University (KU)</option>
+        <option value="JKUAT">JKUAT (Juja)</option>
+        <option value="Strathmore University">Strathmore University</option>
+        <option value="USIU">USIU Africa</option>
+        <option value="Daystar University">Daystar University</option>
+        <option value="Catholic University">Catholic University of E.A.</option>
+        <option value="Africa Nazarene">Africa Nazarene University</option>
+        <option value="Riara University">Riara University</option>
+        <option value="KCA University">KCA University</option>
+        <option value="Mount Kenya University">Mount Kenya University (MKU)</option>
+        <option value="Zetech University">Zetech University</option>
+        <option value="Technical University of Kenya">Technical University of Kenya (TUK)</option>
+        <option value="Multimedia University">Multimedia University (MMU)</option>
+        <option value="Cooperative University">Cooperative University</option>
+        <option value="Pan African University">Pan African University</option>
+        <option value="Tangaza University">Tangaza University</option>
+        <option value="St. Paul's University">St. Paul's University</option>
+        <option value="Kenya Methodist University">Kenya Methodist University (KeMU)</option>
+        <option value="Kenya School of Law">Kenya School of Law</option>
+        <option value="Kenya Medical Training College">Kenya Medical Training College (KMTC)</option>
+        <option value="Kenya Institute of Management">Kenya Institute of Management (KIM)</option>
+        <option value="College of Insurance">College of Insurance</option>
+        <option value="Nairobi Technical">Nairobi Technical Training Institute</option>
+      </optgroup>
+
+      <optgroup label="━━ KIAMBU ━━">
+        <option value="Kiambu">Kiambu Town</option>
+        <option value="Ruaka">Ruaka</option>
+        <option value="Juja">Juja</option>
+        <option value="Kiambu Road">Kiambu Road</option>
+        <option value="Kikuyu">Kikuyu</option>
+        <option value="Limuru">Limuru</option>
+        <option value="Ruiru">Ruiru</option>
+        <option value="Githurai">Githurai</option>
+        <option value="Kinoo">Kinoo</option>
+        <option value="Uthiru">Uthiru</option>
+        <option value="Wangige">Wangige</option>
+        <option value="Gachie">Gachie</option>
+        <option value="Ndenderu">Ndenderu</option>
+        <option value="Banana">Banana</option>
+        <option value="Muthiga">Muthiga</option>
+        <option value="Kiambu Mall">Kiambu Mall</option>
+        <option value="Rosslyn Riviera">Rosslyn Riviera Mall</option>
+        <option value="Ciata Mall">Ciata City Mall (Kiambu Rd)</option>
+        <option value="Juja City Mall">Juja City Mall</option>
+        <option value="Uzuri Mall">Uzuri Mall (Ruiru)</option>
+      </optgroup>
+
+      <optgroup label="━━ THIKA ━━">
+        <option value="Thika">Thika Town</option>
+        <option value="Makongeni">Makongeni</option>
+        <option value="Section 9">Section 9</option>
+        <option value="Jomoko">Jomoko</option>
+        <option value="Kiganjo">Kiganjo</option>
+        <option value="Landless">Landless</option>
+        <option value="Ngoingwa">Ngoingwa</option>
+        <option value="Runda Thika">Runda (Thika)</option>
+        <option value="Kiandutu">Kiandutu</option>
+        <option value="Thika Mall">Thika Mall</option>
+        <option value="Ananas Mall">Ananas Mall</option>
+        <option value="Tuskys Thika">Tuskys Thika</option>
+        <option value="Del Monte">Del Monte Factory</option>
+        <option value="Chania Falls">Chania Falls</option>
+        <option value="Thika Level 5">Thika Level 5 Hospital</option>
+        <option value="Thika Technical">Thika Technical Training Institute</option>
+        <option value="Mount Kenya University Thika">Mount Kenya University (MKU Thika)</option>
+      </optgroup>
+
+      <optgroup label="━━ NAKURU ━━">
+        <option value="Nakuru">Nakuru Town</option>
+        <option value="Milimani">Milimani</option>
+        <option value="Section 58">Section 58</option>
+        <option value="Kiamunyi">Kiamunyi</option>
+        <option value="Naka">Naka</option>
+        <option value="Lanet">Lanet</option>
+        <option value="Njoro">Njoro</option>
+        <option value="Kaptembwo">Kaptembwo</option>
+        <option value="Mwariki">Mwariki</option>
+        <option value="Free Area">Free Area</option>
+        <option value="Shabab">Shabab</option>
+        <option value="London">London Estate</option>
+        <option value="Pipeline Nakuru">Pipeline (Nakuru)</option>
+        <option value="Kiti">Kiti</option>
+        <option value="Barnabas">Barnabas</option>
+        <option value="Westside Mall">Westside Mall</option>
+        <option value="Nakuru Square">Nakuru Square Mall</option>
+        <option value="Kwik Fit">Kwik Fit Mall</option>
+        <option value="Lake Nakuru">Lake Nakuru National Park</option>
+        <option value="Menengai">Menengai Crater</option>
+        <option value="Nakuru Level 5">Nakuru Level 5 Hospital</option>
+        <option value="Egerton University">Egerton University</option>
+        <option value="Kabarak University">Kabarak University</option>
+        <option value="Laikipia University">Laikipia University (Nakuru Campus)</option>
+        <option value="Rift Valley Institute">Rift Valley Institute of Science</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <div class="search-actions">
+    <button class="btn-search" onclick="executeSearch()">🔍 Search Houses</button>
+    <button class="btn-search-reset" onclick="resetFilters()">Reset</button>
+  </div>
+</div>
+
+    <div class="search-panel">
+  <button class="near-me-btn" id="nearMeBtn" onclick="requestLocationAndFindNearby()">
+    📍 <span id="nearMeBtnText">Find Houses Near Me</span>
+  </button>
+</div>
 </section>
 
 <section class="container">
@@ -1374,6 +1691,63 @@ function scrollToAll(e) {
 
 function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
+/* ============ SEARCH & RESET ============ */
+function executeSearch() {
+  const searchEl = document.getElementById('searchInput');
+  const locEl = document.getElementById('locationSelect');
+  if (!searchEl || !locEl) return;
+
+  const query = searchEl.value.trim().toLowerCase();
+  const selectedLocation = locEl.value.trim().toLowerCase();
+
+  if (!state._masterProperties || state._masterProperties.length === 0) {
+    state._masterProperties = state.properties.slice();
+  }
+
+  if (!query && !selectedLocation) {
+    state.properties = state._masterProperties.slice();
+    renderProperties();
+    scrollToAll();
+    return;
+  }
+
+  const filtered = state._masterProperties.filter(p => {
+    const text = [
+      p.title || '',
+      p.location || '',
+      p.type || '',
+      p.landmark || '',
+      (p.landmarks || []).join(' ')
+    ].join(' ').toLowerCase();
+
+    const matchesQuery = !query || text.includes(query);
+    const matchesLocation = !selectedLocation || text.includes(selectedLocation);
+    return matchesQuery && matchesLocation;
+  });
+
+  state.properties = filtered;
+  renderProperties();
+  scrollToAll();
+
+  if (filtered.length === 0) {
+    setTimeout(() => alert('No houses found matching your search.\n\nTry a different area or keyword.'), 300);
+  }
+}
+
+function resetFilters() {
+  const s = document.getElementById('searchInput');
+  const l = document.getElementById('locationSelect');
+  if (s) s.value = '';
+  if (l) l.value = '';
+  if (state._masterProperties) state.properties = state._masterProperties.slice();
+  state.activeChipFilter = { type: '', bedrooms: '' };
+  document.querySelectorAll('.filters .chip').forEach(c => c.classList.remove('active'));
+  const firstChip = document.querySelector('.filters .chip');
+  if (firstChip) firstChip.classList.add('active');
+  renderProperties();
+  scrollToTop();
+}
+
 function renderSlideCard(p, isNearby = false) {
   const img = (p.images && p.images[0] && !p.images[0].includes('via.placeholder.com')) ? p.images[0] : LOGO_PLACEHOLDER;
   const typeLabel = p.type === 'sale' ? 'FOR SALE' : 'FOR RENT';
@@ -1912,7 +2286,7 @@ async function submitLandlordRequest() {
           <br><br>
           <b>Please do not submit the form again.</b>
         </div>
-        <a href="https://wa.me/254143732903?text=Hi,%20I%20submitted%20a%20request%20but%20the%20server%20was%20slow.%20My%20name%20is%20${encodeURIComponent(name)}." 
+        <a href="https://wa.me/254797195234?text=Hi,%20I%20submitted%20a%20request%20but%20the%20server%20was%20slow.%20My%20name%20is%20${encodeURIComponent(name)}." 
            target="_blank" rel="noopener"
            style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; font-size:13.5px; font-weight:800; background:#25D366; color:white; border-radius:12px; text-decoration:none; margin-bottom:10px;">
           💬 Follow up on WhatsApp
@@ -1974,7 +2348,7 @@ function buildViewingSuccessHTML(name, reference) {
   if (phone) waMessage += '\n📞 You can reach me at: ' + phone + '\n';
   waMessage += '\nThank you, I look forward to your response.';
   const waText = encodeURIComponent(waMessage);
-  const waNumber = '254143732903';
+  const waNumber = '254797195234';
   return `
     <div style="text-align:center; padding:8px 0;">
       <div style="width:80px; height:80px; margin:0 auto 16px; background:linear-gradient(135deg, #1a6b3c, #14532d); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(26,107,60,0.4);">
@@ -2253,6 +2627,21 @@ document.addEventListener('keydown', e => {
 window.addEventListener('DOMContentLoaded', () => {
   loadFeatured();
   loadProperties();
+const searchInputEl = document.getElementById('searchInput');
+if (searchInputEl) {
+  searchInputEl.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') executeSearch();
+  });
+}
+
+const locationSelectEl = document.getElementById('locationSelect');
+if (locationSelectEl) {
+  locationSelectEl.addEventListener('change', () => {
+    const q = document.getElementById('searchInput').value.trim();
+    if (q || locationSelectEl.value) executeSearch();
+  });
+}
+
   loadAgentProfile();
   loadStatuses();
   if (shouldAskLocation()) {
