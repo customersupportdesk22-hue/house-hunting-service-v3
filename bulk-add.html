@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulk Add Properties - HouseHunt Kenya</title>
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png">
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --accent: #3b82f6;
+    --accent-dark: #2563eb;
+    --accent-light: #dbeafe;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --border-dark: #d1d5db;
+    --err: #ef4444;
+    --danger: #dc2626;
+    --danger-bg: #fee2e2;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --warn: #f59e0b;
+    --warn-bg: #fef3c7;
+    --purple: #7c3aed;
+    --purple-bg: #f3e8ff;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 24px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 16px; }
+
+  header {
+    background: white;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .header-inner { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 14px; }
+  .logo img { height: 40px; width: 40px; border-radius: 50%; object-fit: cover; background: white; border: 1px solid var(--border); }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.15; }
+  .logo-text .main { font-size: 14px; font-weight: 800; letter-spacing: -0.3px; color: var(--text); }
+  .logo-text .main span { color: var(--accent); }
+  .logo-text .sub { font-size: 9px; color: var(--muted); font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; }
+  .header-user { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+  .role-badge {
+    background: var(--accent-light); color: var(--accent-dark);
+    padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .btn {
+    padding: 10px 14px; border-radius: 8px; border: none;
+    font-weight: 700; font-size: 12.5px; cursor: pointer;
+    transition: all 0.2s; text-decoration: none;
+    display: inline-block; text-align: center;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-outline { background: white; color: var(--text); border: 1px solid var(--border-dark); }
+  .btn-outline:hover { background: var(--bg); }
+  .btn-photo { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 9px 14px; font-size: 11.5px; font-weight: 700; border-radius: 8px; cursor: pointer; }
+  .btn-photo:hover { opacity: 0.9; }
+  .btn-tiktok { background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none; padding: 9px 14px; font-size: 11.5px; font-weight: 700; border-radius: 8px; cursor: pointer; }
+  .btn-tiktok:hover { opacity: 0.9; }.page-title { padding: 24px 0 8px; }
+.page-title h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.4px; color: var(--text); }
+.page-title p { color: var(--muted); font-size: 13px; }
+
+.tabs {
+  display: flex; gap: 6px; padding: 16px 0;
+  overflow-x: auto; scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  padding: 10px 14px; border-radius: 10px; white-space: nowrap;
+  background: white; border: 1px solid var(--border-dark);
+  color: var(--text); font-size: 12.5px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.tab:hover { border-color: var(--accent); color: var(--accent); }
+.tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+.panel { display: none; padding: 20px 0; }
+.panel.active { display: block; }
+
+.info-box {
+  background: var(--accent-light);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--text);
+}
+.info-box b { color: var(--accent-dark); }
+.info-box code {
+  background: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'SF Mono', Monaco, monospace;
+  font-size: 11px;
+  color: var(--accent-dark);
+}
+
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 700; }
+.field textarea {
+  width: 100%; padding: 12px 14px; border-radius: 10px;
+  background: white; border: 1px solid var(--border-dark);
+  color: var(--text); font-size: 13px; outline: none;
+  font-family: 'SF Mono', Monaco, monospace;
+  min-height: 180px; resize: vertical; line-height: 1.6;
+}
+.field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }.section-title {
+  font-size: 13px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.6px;
+  margin: 24px 0 12px;
+}
+.preview-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px; margin-bottom: 12px;
+  display: flex; gap: 12px; align-items: flex-start;
+  box-shadow: var(--shadow-sm);
+}
+.preview-card .preview-thumb {
+  width: 76px; height: 76px; border-radius: 10px;
+  object-fit: cover; background: var(--border); flex-shrink: 0;
+}
+.preview-card .info { flex: 1; min-width: 0; }
+.preview-card .info h4 {
+  font-size: 14px; font-weight: 800; margin-bottom: 4px; color: var(--text);
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.preview-card .info p { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+.preview-card .info .price { color: #f97316; font-weight: 800; font-size: 14px; }
+.preview-card .info .landmarks {
+  margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px;
+}
+.preview-card .info .landmark-tag {
+  background: var(--accent-light); color: var(--accent-dark);
+  font-size: 10px; padding: 3px 8px; border-radius: 5px; font-weight: 700;
+}
+.preview-card .info .prof-desc {
+  background: var(--bg); border-left: 3px solid var(--accent);
+  padding: 8px 10px; margin-top: 8px; font-size: 12px;
+  color: var(--text); line-height: 1.5; border-radius: 6px;
+  font-style: italic;
+}
+.preview-card .info .prof-desc.ai-written {
+  border-left-color: var(--purple);
+  background: var(--purple-bg);
+}
+.preview-card .info .ai-badge {
+  display: inline-block;
+  background: var(--purple-bg); color: var(--purple);
+  font-size: 9.5px; padding: 3px 8px; border-radius: 5px;
+  font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.preview-card .remove-btn {
+  background: var(--danger-bg); color: var(--danger);
+  border: 1px solid rgba(220,38,38,0.3);
+  width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
+  font-size: 16px; line-height: 1; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.preview-card .remove-btn:hover { background: #fecaca; }
+
+.preview-photos {
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--accent-light);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 10px;
+}
+.preview-photos.video-section {
+  background: var(--purple-bg);
+  border-color: rgba(168,85,247,0.25);
+}
+.preview-photos .photos-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px; gap: 8px; flex-wrap: wrap;
+}
+.preview-photos .photos-header .label {
+  font-size: 11px; color: var(--accent-dark); font-weight: 800;
+}
+.preview-photos.video-section .photos-header .label { color: var(--purple); }
+.preview-photos .photos-header .count {
+  font-size: 10px; color: var(--muted); font-weight: 700;
+}
+.preview-photos .photo-thumbs {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.preview-photos .photo-thumb {
+  width: 56px; height: 56px; border-radius: 8px; overflow: hidden;
+  position: relative; border: 1px solid var(--border);
+}
+.preview-photos .photo-thumb img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.preview-photos .photo-thumb .remove {
+  position: absolute; top: 2px; right: 2px;
+  background: rgba(0,0,0,0.75); color: white; border: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  font-size: 10px; cursor: pointer; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}  .alert {
+    padding: 12px 16px; border-radius: 10px; font-size: 13px;
+    margin-bottom: 14px; display: none; line-height: 1.5;
+  }
+  .alert.err { background: var(--danger-bg); color: var(--danger); display: block; border: 1px solid rgba(220,38,38,0.3); }
+  .alert.ok { background: var(--success-bg); color: var(--success); display: block; border: 1px solid rgba(21,128,61,0.3); }
+  .alert.info { background: var(--warn-bg); color: #b45309; display: block; border: 1px solid rgba(245,158,11,0.3); }
+
+  .progress-box {
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin: 14px 0;
+    display: none;
+  }
+  .progress-box.show { display: block; }
+  .progress-box .progress-label {
+    font-size: 12.5px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--text);
+  }
+  .progress-box .progress-bar {
+    height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-box .progress-fill {
+    height: 100%; background: linear-gradient(90deg, #3b82f6, #22c55e);
+    width: 0%; transition: width 0.3s ease;
+  }
+
+  .login-gate {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    z-index: 9999;
+  }
+  .login-gate .gate-box {
+    background: white; padding: 36px 28px; border-radius: 18px;
+    text-align: center; max-width: 400px; width: 100%;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+  }
+  .login-gate h2 { font-size: 20px; margin-bottom: 10px; color: var(--text); }
+  .login-gate p { color: var(--muted); font-size: 13.5px; margin-bottom: 22px; }
+
+  @media (max-width: 600px) {
+    .preview-card { flex-direction: row; }
+  }
+</style>
+</head>
+<body><!-- LOGIN GATE -->
+<div class="login-gate" id="loginGate">
+  <div class="gate-box">
+    <div style="font-size: 44px; margin-bottom: 12px;">🔒</div>
+    <h2>Agent Access Required</h2>
+    <p>You need to be signed in as an Agent or Admin to view this dashboard.</p>
+    <a href="/" class="btn btn-primary" style="width: 100%; padding: 14px;">Go to Homepage</a>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="container header-inner">
+    <div class="logo">
+      <img src="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png" alt="HouseHunt Kenya">
+      <div class="logo-text">
+        <div class="main">HouseHunt <span>Kenya</span></div>
+        <div class="sub">Bulk Add Properties</div>
+      </div>
+    </div>
+    <div class="header-user">
+      <span class="role-badge" id="userRole">Agent</span>
+      <a href="/dashboard.html" class="btn btn-outline" style="padding: 8px 14px; font-size: 11.5px;">← Dashboard</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="page-title">
+    <h1>Bulk Add Properties</h1>
+    <p>Add multiple properties at once from pasted text</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(this, 'quick')">📝 Quick Add</button>
+    <button class="tab" onclick="switchTab(this, 'bulk')">📚 Bulk Add</button>
+    <button class="tab" onclick="switchTab(this, 'ai')">🤖 AI Assist</button>
+  </div>  <!-- QUICK ADD PANEL -->
+  <div class="panel active" id="panel-quick">
+    <div class="info-box">
+      <b>📝 Paste one property below.</b> Auto-detects location, landmarks, schools, hospitals, price, and more.<br>
+      <b>Example formats:</b><br>
+      • <code>Single room in Kasarani, 5000, near Mwiki Market</code><br>
+      • <code>Bedsitter in Umoja, 6500, near Umoja Market</code><br>
+      • <code>2BR Apartment in Kilimani, 35000, near Yaya Centre</code>
+    </div>
+    <div class="alert err" id="quickError"></div>
+    <div class="field">
+      <label>Paste Property Text</label>
+      <textarea id="quickText" placeholder="e.g., Single room in Kasarani, 5000, near Mwiki Market, agent 0738264143"></textarea>
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:14px; font-size:14px;" onclick="parseQuick()">
+      🔍 Parse & Preview
+    </button>
+    <div class="progress-box" id="quickProgress">
+      <div class="progress-label">
+        <span>✨ Writing AI descriptions...</span>
+        <span id="quickProgressText">0 / 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="quickProgressFill"></div></div>
+    </div>
+    <div id="quickPreview"></div>
+  </div>
+
+  <!-- BULK ADD PANEL -->
+  <div class="panel" id="panel-bulk">
+    <div class="info-box">
+      <b>📚 Paste multiple properties.</b> Separate them with:<br>
+      • <b>Blank lines</b> (press Enter twice)<br>
+      • <b>OR numbered lists</b> (1. 2. 3.)<br>
+      • <b>OR dashes</b> (---)<br>
+      <b>Prices work as:</b> <code>35000</code>, <code>35,000</code>, or <code>35k</code>
+    </div>
+    <div class="alert err" id="bulkError"></div>
+    <div class="field">
+      <label>Paste Multiple Properties</label>
+      <textarea id="bulkText" placeholder="Single room in Kasarani, 5000, near Mwiki Market, agent 0738264143&#10;&#10;Bedsitter in Umoja, 6500, near Umoja Market, agent 0738264143&#10;&#10;2BR in Kilimani, 35000, near Yaya Centre, agent 0738264143"></textarea>
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:14px; font-size:14px;" onclick="parseBulk()">
+      🔍 Parse All
+    </button>
+    <div class="progress-box" id="bulkProgress">
+      <div class="progress-label">
+        <span>✨ Writing AI descriptions...</span>
+        <span id="bulkProgressText">0 / 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="bulkProgressFill"></div></div>
+    </div>
+    <div id="bulkPreview"></div>
+  </div>
+
+  <!-- AI ASSIST PANEL -->
+  <div class="panel" id="panel-ai">
+    <div class="info-box">
+      <b>🤖 Paste rough text.</b> AI will structure it.<br>
+      Handles landmarks, schools, hospitals, malls:<br>
+      <code>single room kasarani 5000 near Mwiki Market</code><br>
+      <code>bedsitter umoja 6500 near Umoja Market</code><br>
+      <code>studio westlands 20000 close to Sarit Centre</code>
+    </div>
+    <div class="alert err" id="aiError"></div>
+    <div class="field">
+      <label>Paste Rough Text</label>
+      <textarea id="aiText" placeholder="single room kasarani 5000 near Mwiki Market&#10;&#10;bedsitter umoja 6500 near Umoja Market&#10;&#10;studio westlands 20000 close to Sarit Centre"></textarea>
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:14px; font-size:14px;" onclick="parseAI()">
+      🤖 Parse with AI
+    </button>
+    <div class="progress-box" id="aiProgress">
+      <div class="progress-label">
+        <span>✨ Writing AI descriptions...</span>
+        <span id="aiProgressText">0 / 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="aiProgressFill"></div></div>
+    </div>
+    <div id="aiPreview"></div>
+  </div>
+</div>
+<script>const API_BASE = 'https://house-hunt-server.onrender.com';
+const PLACEHOLDER_IMG = 'https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png';
+
+let state = {
+  token: localStorage.getItem('hh_token') || null,
+  user: JSON.parse(localStorage.getItem('hh_user') || 'null'),
+  parsedProperties: []
+};
+
+async function api(path, options = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
+  const res = await fetch(API_BASE + path, { ...options, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+function checkAuth() {
+  const gate = document.getElementById('loginGate');
+  if (!state.token || !state.user || (state.user.role !== 'admin' && state.user.role !== 'agent')) {
+    gate.style.display = 'flex';
+    return false;
+  }
+  gate.style.display = 'none';
+  document.getElementById('userRole').textContent = state.user.role;
+  return true;
+}
+
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function switchTab(btn, tabName) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + tabName).classList.add('active');
+}
+
+const LOCATIONS = {
+  nairobiAreas: ['kilimani','karen','westlands','lavington','kileleshwa','runda','muthaiga','parklands','kasarani','embakasi','langata','south b','south c','roysambu','ngara','ngong','donholm','umoja','buruburu','eastleigh','pangani','highridge','spring valley','kitisuru','ruaka','kikuyu','gigiri','riverside','ridgeways','jamhuri','dagoretti','kawangware','kangemi','industrial area','cbd','upperhill','hurlingham','yaya','garden estate','kabete','kinoo','uthiru','kahawa','zimmerman','kamulu','ruai','utawala','syokimau','mlolongo','athi river','kitengela','kiserian','ongata rongai','membley','nyari','loresho','kyuna','pipeline','dandora','githurai','mwiki','kariobangi','huruma','mathare','korogocho'],
+  mombasaAreas: ['nyali','bamburi','shanzu','kizingo','tudor','likoni','mkomani','kipevu','miritini','changamwe','magongo','bombolulu','maweni','mtwapa','diani','ukunda','msambweni','kilifi','malindi','watamu','galu','tiwi'],
+  nakuruAreas: ['milimani','section 58','kiamunyi','lanet','ngata','bahati','kabachia','flamingo','kivumbini','rhoda','shabab','mawanga','free area','nakuru cbd'],
+  kiambuAreas: ['ruiru','juja','githurai','kahawa west','kahawa sukari','kiambu town','kikuyu','limuru','wangige','gikambura','ndenderu','kanjeru','thome','kiambu road','juja farm','ruaka'],
+  thikaAreas: ['thika town','thika road','gatundu','kiganjo','mang\'u','kiandutu','makongeni','section 9','landless','kamenu']
+};const LANDMARKS = [
+  { match: ['yaya centre','yaya center','yaya'], tag: 'Yaya Centre' },
+  { match: ['sarit centre','sarit center','sarit'], tag: 'Sarit Centre' },
+  { match: ['the hub','hub karen','hub mall'], tag: 'The Hub Karen' },
+  { match: ['westgate'], tag: 'Westgate Mall' },
+  { match: ['garden city'], tag: 'Garden City Mall' },
+  { match: ['two rivers'], tag: 'Two Rivers Mall' },
+  { match: ['village market'], tag: 'Village Market' },
+  { match: ['junction mall','the junction'], tag: 'The Junction Mall' },
+  { match: ['capital centre','capital center'], tag: 'Capital Centre' },
+  { match: ['thika road mall','trm'], tag: 'Thika Road Mall' },
+  { match: ['aga khan'], tag: 'Aga Khan Hospital' },
+  { match: ['nairobi hospital'], tag: 'Nairobi Hospital' },
+  { match: ['mp shah','m.p. shah'], tag: 'MP Shah Hospital' },
+  { match: ['mater hospital','mater'], tag: 'Mater Hospital' },
+  { match: ['karen hospital'], tag: 'Karen Hospital' },
+  { match: ['gertrude'], tag: "Gertrude's Children's Hospital" },
+  { match: ['nairobi women'], tag: "Nairobi Women's Hospital" },
+  { match: ['coptic hospital','coptic'], tag: 'Coptic Hospital' },
+  { match: ['knh','kenyatta national'], tag: 'Kenyatta National Hospital' },
+  { match: ['mombasa hospital'], tag: 'Mombasa Hospital' },
+  { match: ['uon','university of nairobi'], tag: 'University of Nairobi' },
+  { match: ['strathmore'], tag: 'Strathmore University' },
+  { match: ['jkuat'], tag: 'JKUAT' },
+  { match: ['kenyatta university','ku main'], tag: 'Kenyatta University' },
+  { match: ['usiu'], tag: 'USIU-Africa' },
+  { match: ['daystar'], tag: 'Daystar University' },
+  { match: ['cuea','catholic university'], tag: 'Catholic University' },
+  { match: ['tuk','technical university'], tag: 'Technical University of Kenya' },
+  { match: ['mku','mount kenya university'], tag: 'Mount Kenya University' },
+  { match: ['mmu','multimedia university'], tag: 'Multimedia University' },
+  { match: ['riara'], tag: 'Riara University' },
+  { match: ['kca'], tag: 'KCA University' },
+  { match: ['utalii'], tag: 'Kenya Utalii College' },
+  { match: ['brookhouse'], tag: 'Brookhouse School' },
+  { match: ['braeburn'], tag: 'Braeburn School' },
+  { match: ['st marys','st. marys'], tag: "St. Mary's School" },
+  { match: ['peponi'], tag: 'Peponi School' },
+  { match: ['hillcrest'], tag: 'Hillcrest School' },
+  { match: ['alliance'], tag: 'Alliance High School' },
+  { match: ['kenya high'], tag: 'Kenya High School' },
+  { match: ['lenana'], tag: 'Lenana School' },
+  { match: ['uhuru park'], tag: 'Uhuru Park' },
+  { match: ['karura forest','karura'], tag: 'Karura Forest' },
+  { match: ['nairobi national park'], tag: 'Nairobi National Park' },
+  { match: ['jomo kenyatta','jkia','airport'], tag: 'JKIA Airport' },
+  { match: ['wilson airport','wilson'], tag: 'Wilson Airport' },
+  { match: ['nyayo stadium'], tag: 'Nyayo Stadium' },
+  { match: ['kicc'], tag: 'KICC' },
+  { match: ['mwiki market','mwiki'], tag: 'Mwiki Market' },
+  { match: ['umoja market'], tag: 'Umoja Market' },
+  { match: ['eastleigh mall'], tag: 'Eastleigh Mall' },
+  { match: ['githurai market'], tag: 'Githurai Market' },
+  { match: ['kahawa sukari'], tag: 'Kahawa Sukari' },
+  { match: ['nyayo estate'], tag: 'Nyayo Estate' },
+  { match: ['dandora market'], tag: 'Dandora Market' },
+  { match: ['ruiru town'], tag: 'Ruiru Town' },
+  { match: ['thika stadium'], tag: 'Thika Stadium' },
+  { match: ['kiambu market'], tag: 'Kiambu Market' },
+  { match: ['wangige market'], tag: 'Wangige Market' },
+  { match: ['kinoo 87'], tag: 'Kinoo 87' },
+  { match: ['gatundu town'], tag: 'Gatundu Town' },
+  { match: ['kamulu'], tag: 'Kamulu Shopping Centre' },
+  { match: ['ruiru mall'], tag: 'Ruiru Mall' },
+  { match: ['kiambu mall'], tag: 'Kiambu Mall' },
+  { match: ['limuru town'], tag: 'Limuru Town' },
+  { match: ['kikuyu town'], tag: 'Kikuyu Town' },
+  { match: ['ndenderu'], tag: 'Ndenderu Stage' }
+];
+
+function generateFallbackDescription(p) {
+  const unitType = p.unitLabel || (p.bedrooms === 0 ? 'studio' : p.bedrooms + '-bedroom');
+  const typeLabel = p.type === 'sale' ? 'for sale' : 'for rent';
+  const priceLabel = p.price ? 'KES ' + Number(p.price).toLocaleString() + (p.type === 'rent' ? ' per month' : '') : '';
+  const loc = p.location || 'Kenya';
+  let opening;
+  if (unitType === 'Single Room') {
+    opening = `This single room ${typeLabel} in ${loc} is a practical and affordable option, ideal for a student, young professional, or anyone looking for budget-friendly accommodation with easy access to shops, transport, and essential services.`;
+  } else if (unitType === 'Bedsitter') {
+    opening = `Welcome to this well-presented bedsitter ${typeLabel} in ${loc}. Perfectly suited for a single professional, student, or couple, this cozy space offers an open living area, a private bathroom, and everything you need for comfortable, independent living.`;
+  } else if (unitType === 'Studio') {
+    opening = `Discover this modern studio apartment ${typeLabel} in ${loc}. Boasting an open-plan layout with a well-appointed kitchenette and bathroom, this property is perfect for a single occupant or couple seeking a stylish and low-maintenance home.`;
+  } else {
+    opening = `Welcome to this charming ${p.bedrooms}-bedroom property ${typeLabel} in ${loc}. Offering a comfortable and practical layout, this home is ideal for individuals, couples, or small families looking for a secure and convenient living space.`;
+  }
+  let features;
+  if (unitType === 'Single Room') {
+    features = `\n\nThe room comes with a clean shared bathroom and access to common amenities, making it a smart and affordable choice in a well-connected neighbourhood.`;
+  } else if (p.bedrooms === 0) {
+    features = `\n\nThe unit features an open-plan living area and ${p.bathrooms} clean bathroom(s), thoughtfully designed for comfort and privacy.`;
+  } else {
+    features = `\n\nThe property features ${p.bedrooms} spacious bedroom(s) and ${p.bathrooms} clean bathroom(s), thoughtfully designed for comfort and family living.`;
+  }
+  let locationInfo = '';
+  if (p.landmarks && p.landmarks.length) {
+    locationInfo = `\n\nLocation Highlights:\n${p.landmarks.map(l => '• Close to ' + l).join('\n')}`;
+  }
+  let closing = `\n\n${priceLabel ? 'Offered at ' + priceLabel + '. ' : ''}Viewing is available by appointment only.`;
+  return opening + features + locationInfo + closing;
+}function parsePropertyText(text) {
+  const t = String(text).trim();
+  const lower = t.toLowerCase();
+  const tiktokMatch = t.match(/(https?:\/\/(?:www\.)?tiktok\.com\/[^\s]+|https?:\/\/vt\.tiktok\.com\/[^\s]+|https?:\/\/(?:www\.)?youtube\.com\/[^\s]+|https?:\/\/youtu\.be\/[^\s]+|https?:\/\/(?:www\.)?vimeo\.com\/[^\s]+)/i);
+  const tiktok_url = tiktokMatch ? tiktokMatch[1] : null;
+  let agent_phone = null;
+  const agentMatch = t.match(/agent[:\s]+(\+?254\s?\d{9}|0[17]\d{8})/i);
+  if (agentMatch) agent_phone = agentMatch[1].replace(/\s+/g, '');
+  let price = 0;
+  const kMatch = lower.match(/(\d+(?:\.\d+)?)\s*k\b/);
+  if (kMatch) price = Math.round(parseFloat(kMatch[1]) * 1000);
+  if (!price) {
+    const priceMatches = t.match(/(?:kes|ksh|sh)?\s*([\d,]+)/gi);
+    if (priceMatches) {
+      for (const m of priceMatches) {
+        const num = parseInt(m.replace(/[^\d]/g, ''), 10);
+        if (num >= 1000) { price = num; break; }
+      }
+    }
+  }
+  let bedrooms = 0;
+  let unitLabel = 'Studio';
+  const bedMatch = lower.match(/(\d+)\s*(?:bed|bedroom|br|bd)/);
+  if (bedMatch) {
+    bedrooms = parseInt(bedMatch[1], 10);
+    unitLabel = bedrooms + ' Bedroom';
+  } else if (lower.includes('single room') || lower.includes('single-room') || lower.includes('single roomed')) {
+    bedrooms = 0; unitLabel = 'Single Room';
+  } else if (lower.includes('bedsitter') || lower.includes('bed-sitter') || lower.includes('bed sitter')) {
+    bedrooms = 0; unitLabel = 'Bedsitter';
+  } else if (lower.includes('studio')) {
+    bedrooms = 0; unitLabel = 'Studio';
+  }
+  let bathrooms = 1;
+  const bathMatch = lower.match(/(\d+)\s*(?:bath|bathroom|ba)/);
+  if (bathMatch) bathrooms = parseInt(bathMatch[1], 10);
+  let type = 'rent';
+  if (lower.includes('sale') || lower.includes('selling')) type = 'sale';
+  let location = '';
+  let county = '';
+  const checkLocation = (areas, countyName) => {
+    for (const a of areas) {
+      if (lower.includes(a)) {
+        location = a.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        county = countyName;
+        return true;
+      }
+    }
+    return false;
+  };
+  if (!checkLocation(LOCATIONS.nairobiAreas, 'Nairobi')) {
+    if (!checkLocation(LOCATIONS.mombasaAreas, 'Mombasa')) {
+      if (!checkLocation(LOCATIONS.nakuruAreas, 'Nakuru')) {
+        if (!checkLocation(LOCATIONS.kiambuAreas, 'Kiambu')) {
+          if (!checkLocation(LOCATIONS.thikaAreas, 'Thika')) {
+            const counties = ['nairobi','nakuru','kiambu','thika','mombasa'];
+            for (const c of counties) {
+              if (lower.includes(c)) { location = c.charAt(0).toUpperCase() + c.slice(1); county = location; break; }
+            }
+          }
+        }
+      }
+    }
+  }
+  if (!location) location = 'Kenya';
+  const landmarks = [];
+  for (const lm of LANDMARKS) {
+    for (const m of lm.match) {
+      if (lower.includes(m)) {
+        if (!landmarks.includes(lm.tag)) landmarks.push(lm.tag);
+        break;
+      }
+    }
+  }
+  const lines = t.split('\n').map(l => l.trim()).filter(Boolean);
+  let title = lines[0] || 'Untitled Property';
+  if (/^[\d\s,]+$/.test(title)) {
+    const desc = lines.find(l => /[a-zA-Z]/.test(l) && l.length > 5);
+    if (desc) title = desc;
+  }
+  title = title.replace(/\b(\d+k)\b/gi, m => (parseInt(m) * 1000).toString());
+  title = title.slice(0, 90);
+  if (!price) {
+    const anyNum = t.match(/\b(\d{4,6})\b/);
+    if (anyNum) price = parseInt(anyNum[1], 10);
+  }
+  const prop = {
+    title, location: county ? location + ', ' + county : location,
+    price: price || 0, bedrooms, unitLabel, bathrooms, type,
+    tiktok_url, landmarks, agent_phone, images: [PLACEHOLDER_IMG],
+    userPhotos: [], isHot: false, description_source: 'fallback'
+  };
+  prop.description = generateFallbackDescription(prop);
+  return prop;
+}
+
+async function generateAIDescription(prop) {
+  try {
+    const res = await api('/api/generate-description', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: prop.title, location: prop.location, price: prop.price,
+        bedrooms: prop.bedrooms, bathrooms: prop.bathrooms,
+        unitLabel: prop.unitLabel, type: prop.type, landmarks: prop.landmarks
+      })
+    });
+    if (res.ok && res.description) return { description: res.description, source: 'ai' };
+    return null;
+  } catch (e) {
+    console.log('AI description failed:', e.message);
+    return null;
+  }
+}
+
+async function enrichWithAIDescriptions(properties, progressBoxId) {
+  const box = document.getElementById(progressBoxId);
+  const textEl = document.getElementById(progressBoxId + 'Text');
+  const fillEl = document.getElementById(progressBoxId + 'Fill');
+  box.classList.add('show');
+  const total = properties.length;
+  let done = 0;
+  textEl.textContent = '0 / ' + total;
+  fillEl.style.width = '0%';
+  for (let i = 0; i < total; i++) {
+    const prop = properties[i];
+    const result = await generateAIDescription(prop);
+    if (result) {
+      prop.description = result.description;
+      prop.description_source = 'ai';
+    }
+    done++;
+    textEl.textContent = done + ' / ' + total;
+    fillEl.style.width = Math.round((done / total) * 100) + '%';
+  }
+  setTimeout(() => { box.classList.remove('show'); }, 800);
+  return properties;
+}async function parseQuick() {
+  const text = document.getElementById('quickText').value.trim();
+  const errEl = document.getElementById('quickError');
+  errEl.style.display = 'none';
+  if (!text) { errEl.textContent = 'Please paste some text'; errEl.style.display = 'block'; return; }
+  state.parsedProperties = [parsePropertyText(text)];
+  await enrichWithAIDescriptions(state.parsedProperties, 'quickProgress');
+  renderPreview('quickPreview');
+}
+
+async function parseBulk() {
+  const text = document.getElementById('bulkText').value.trim();
+  const errEl = document.getElementById('bulkError');
+  errEl.style.display = 'none';
+  if (!text) { errEl.textContent = 'Please paste properties'; errEl.style.display = 'block'; return; }
+  let blocks = text.split(/\n\s*\n/);
+  if (blocks.length <= 1) blocks = text.split(/(?=^\s*\d+[\.\)]\s)/m);
+  if (blocks.length <= 1) blocks = text.split(/\n\s*-{3,}\s*\n/);
+  blocks = blocks.map(b => b.trim()).filter(b => b.length > 5);
+  if (blocks.length === 0) { errEl.textContent = 'No valid properties found'; errEl.style.display = 'block'; return; }
+  state.parsedProperties = blocks.map(parsePropertyText);
+  await enrichWithAIDescriptions(state.parsedProperties, 'bulkProgress');
+  renderPreview('bulkPreview');
+}
+
+async function parseAI() {
+  const text = document.getElementById('aiText').value.trim();
+  const errEl = document.getElementById('aiError');
+  errEl.style.display = 'none';
+  if (!text) { errEl.textContent = 'Please paste some text'; errEl.style.display = 'block'; return; }
+  let blocks = text.split(/\n\s*\n/);
+  if (blocks.length <= 1) blocks = [text];
+  blocks = blocks.map(b => b.trim()).filter(b => b.length > 5);
+  state.parsedProperties = blocks.map(parsePropertyText);
+  await enrichWithAIDescriptions(state.parsedProperties, 'aiProgress');
+  renderPreview('aiPreview');
+}
+
+function pickPhotosForProperty(index) {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*'; input.multiple = true;
+  input.onchange = (e) => handlePropertyPhotoSelect(e, index);
+  input.click();
+}
+
+function handlePropertyPhotoSelect(event, index) {
+  const files = Array.from(event.target.files || []);
+  if (files.length === 0) return;
+  const prop = state.parsedProperties[index];
+  if (!prop) return;
+  if (!prop.userPhotos) prop.userPhotos = [];
+  const remaining = 5 - prop.userPhotos.length;
+  const toAdd = files.slice(0, remaining);
+  toAdd.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      prop.userPhotos.push(e.target.result);
+      const activePanel = document.querySelector('.panel.active');
+      if (activePanel) {
+        const targetId = activePanel.querySelector('[id$="Preview"]')?.id;
+        if (targetId) renderPreview(targetId);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  if (files.length > remaining) {
+    setTimeout(() => alert('Maximum 5 photos per property. Only first ' + remaining + ' added.'), 200);
+  }
+}
+
+function removePropertyPhoto(propIndex, photoIndex) {
+  const prop = state.parsedProperties[propIndex];
+  if (!prop || !prop.userPhotos) return;
+  prop.userPhotos.splice(photoIndex, 1);
+  const activePanel = document.querySelector('.panel.active');
+  if (activePanel) {
+    const targetId = activePanel.querySelector('[id$="Preview"]')?.id;
+    if (targetId) renderPreview(targetId);
+  }
+}
+
+function pickVideoForProperty(index) {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'video/*';
+  input.onchange = (e) => handlePropertyVideoSelect(e, index);
+  input.click();
+}
+
+async function handlePropertyVideoSelect(event, index) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return; event.target.value = '';
+  const prop = state.parsedProperties[index];
+  if (!prop) return;
+  const maxBytes = 20 * 1024 * 1024;
+  if (file.size > maxBytes) { alert('Video too large (' + (file.size / 1024 / 1024).toFixed(1) + ' MB). Maximum 20 MB.'); return; }
+  const labelEl = document.getElementById('video-status-' + index);
+  if (labelEl) labelEl.textContent = '⏳ Uploading video to Cloudinary...';
+  try {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Failed to read video'));
+      reader.readAsDataURL(file);
+    });
+    const res = await api('/api/upload-video', { method: 'POST', body: JSON.stringify({ video: base64, mimeType: file.type || 'video/mp4' }) });
+    prop.tiktok_url = res.url;
+    const inputEl = document.getElementById('video-input-' + index);
+    if (inputEl) inputEl.value = res.url;
+    if (labelEl) labelEl.textContent = '✅ Video uploaded successfully!';
+  } catch (e) {
+    if (labelEl) labelEl.textContent = '❌ Upload failed: ' + e.message;
+    alert('Video upload failed: ' + e.message);
+  }
+}
+
+async function downloadTikTokForProperty(index) {
+  const prop = state.parsedProperties[index];
+  if (!prop) return;
+  const urlInput = document.getElementById('video-input-' + index);
+  const url = urlInput ? urlInput.value.trim() : '';
+  if (!url || (!url.includes('tiktok.com') && !url.includes('vt.tiktok'))) { alert('Please paste a TikTok URL in the input field above first.'); return; }
+  const labelEl = document.getElementById('video-status-' + index);
+  if (labelEl) labelEl.textContent = '📥 Connecting to TikTok...';
+  let fakeStage = 0;
+  const fakeTimer = setInterval(() => {
+    fakeStage++;
+    if (labelEl) {
+      if (fakeStage === 2) labelEl.textContent = '📥 Downloading from TikTok...';
+      else if (fakeStage === 5) labelEl.textContent = '☁️ Uploading to Cloudinary...';
+      else if (fakeStage === 8) labelEl.textContent = '✨ Almost done...';
+    }
+  }, 1000);
+  try {
+    const res = await api('/api/download-tiktok', { method: 'POST', body: JSON.stringify({ tiktok_url: url }) });
+    clearInterval(fakeTimer);
+    prop.tiktok_url = res.url;
+    if (urlInput) urlInput.value = res.url;
+    if (labelEl) labelEl.textContent = '✅ Saved! (' + res.size_mb + ' MB)';
+    setTimeout(() => { if (labelEl) labelEl.textContent = ''; }, 4000);
+  } catch (e) {
+    clearInterval(fakeTimer);
+    if (labelEl) labelEl.textContent = '❌ TikTok failed: ' + e.message;
+    alert('TikTok download failed: ' + e.message);
+  }
+}
+
+function renderPreview(targetId) {
+  const el = document.getElementById(targetId);
+  if (state.parsedProperties.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div class="section-title">Preview (${state.parsedProperties.length} propert${state.parsedProperties.length === 1 ? 'y' : 'ies'})</div>
+    ${state.parsedProperties.map((p, i) => {
+      const photos = p.userPhotos || [];
+      const thumbSrc = photos.length > 0 ? photos[0] : p.images[0];
+      const unitDisplay = p.unitLabel || (p.bedrooms === 0 ? 'Studio' : p.bedrooms + ' Bedroom');
+      const photoSection = `
+        <div class="preview-photos">
+          <div class="photos-header">
+            <span class="label">📷 Photos for this property</span>
+            <span class="count">${photos.length} / 5</span>
+          </div>
+          <div class="photo-thumbs">
+            ${photos.map((img, pi) => `
+              <div class="photo-thumb">
+                <img src="${img}" alt="photo ${pi+1}">
+                <button class="remove" onclick="event.stopPropagation(); removePropertyPhoto(${i}, ${pi})">×</button>
+              </div>
+            `).join('')}
+            ${photos.length < 5 ? `<button class="btn-photo" onclick="event.stopPropagation(); pickPhotosForProperty(${i})" style="height:56px; padding:0 14px;">+ Add</button>` : ''}
+          </div>
+        </div>
+      `;
+      const videoSection = `
+        <div class="preview-photos video-section">
+          <div class="photos-header">
+            <span class="label">🎬 Video Tour (Optional)</span>
+          </div>
+          <input type="url" 
+                 id="video-input-${i}" 
+                 value="${escapeHtml(p.tiktok_url || '')}"
+                 oninput="state.parsedProperties[${i}].tiktok_url = this.value"
+                 placeholder="Paste video URL (Cloudinary, TikTok, YouTube)" 
+                 style="width:100%; padding:10px 12px; border-radius:8px; background:white; border:1px solid var(--border-dark); color:var(--text); font-size:12px; outline:none; font-family:inherit;">
+          <button type="button" 
+                  class="btn-photo" 
+                  style="width:100%; margin-top:8px; padding:10px;" 
+                  onclick="event.stopPropagation(); pickVideoForProperty(${i})">
+            📹 Upload Video from Phone
+          </button>
+          <button type="button" 
+                  class="btn-tiktok" 
+                  style="width:100%; margin-top:6px; padding:10px;" 
+                  onclick="event.stopPropagation(); downloadTikTokForProperty(${i})">
+            📥 Download & Save from TikTok
+          </button>
+          <div id="video-status-${i}" style="font-size:11px; color:var(--purple); margin-top:6px; text-align:center; font-weight:700;"></div>
+        </div>
+      `;
+      return `
+        <div class="preview-card">
+          <img class="preview-thumb" src="${thumbSrc}" alt="${escapeHtml(p.title)}">
+          <div class="info">
+            <h4>${escapeHtml(p.title)}</h4>
+            <p>📍 ${escapeHtml(p.location)}</p>
+            <p class="price">Ksh ${Number(p.price || 0).toLocaleString()}${p.type === 'rent' ? ' /mo' : ''}</p>
+            <p>🛏️ ${escapeHtml(unitDisplay)} • 🚿 ${p.bathrooms} bath • ${p.type === 'sale' ? 'For Sale' : 'For Rent'}</p>
+            ${p.agent_phone ? `<p>📞 Agent: ${escapeHtml(p.agent_phone)}</p>` : ''}
+            ${p.landmarks && p.landmarks.length ? `
+              <div class="landmarks">
+                ${p.landmarks.map(l => '<span class="landmark-tag">📍 ' + escapeHtml(l) + '</span>').join('')}
+              </div>
+            ` : ''}
+            <div class="prof-desc ${p.description_source === 'ai' ? 'ai-written' : ''}">
+              ${p.description_source === 'ai' ? '<span class="ai-badge">✨ AI</span> ' : ''}
+              ${escapeHtml(p.description.slice(0, 200))}${p.description.length > 200 ? '...' : ''}
+            </div>
+            
+            <!-- HOT & TRENDING CHECKBOX -->
+            <label style="display:flex; align-items:center; gap:8px; margin-top:10px; padding:8px 10px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; cursor:pointer;">
+              <input type="checkbox" ${p.isHot ? 'checked' : ''} onchange="state.parsedProperties[${i}].isHot = this.checked" style="width:16px; height:16px; accent-color:#1a6b3c;">
+              <span style="font-size:11.5px; font-weight:700; color:#1a6b3c;">🔥 Mark as Hot & Trending (Featured)</span>
+            </label>
+
+            ${photoSection}
+            ${videoSection}
+          </div>
+          <button class="remove-btn" onclick="removeFromList(${i})">×</button>
+        </div>
+      `;
+    }).join('')}
+    <button class="btn btn-primary" style="width:100%;padding:16px;margin-top:16px; font-size:14px;" id="addAllBtn" onclick="addAllProperties()">
+      🚀 Add ${state.parsedProperties.length} Propert${state.parsedProperties.length === 1 ? 'y' : 'ies'}
+    </button>
+    <div class="alert err" id="addAllError" style="margin-top:12px;"></div>
+    <div class="alert ok" id="addAllSuccess" style="margin-top:12px;"></div>
+    <div class="progress-box" id="addAllProgress" style="margin-top:12px;">
+      <div class="progress-label">
+        <span id="addAllProgressLabel">Uploading...</span>
+        <span id="addAllProgressText">0 / 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="addAllProgressFill"></div></div>
+    </div>
+  `;
+}
+
+function removeFromList(index) {
+  state.parsedProperties.splice(index, 1);
+  const activePanel = document.querySelector('.panel.active');
+  if (activePanel) {
+    const targetId = activePanel.querySelector('[id$="Preview"]')?.id;
+    if (targetId) renderPreview(targetId);
+  }
+}
+
+async function addAllProperties() {
+  const errEl = document.getElementById('addAllError');
+  const okEl = document.getElementById('addAllSuccess');
+  const btn = document.getElementById('addAllBtn');
+  const progressBox = document.getElementById('addAllProgress');
+  const progressLabel = document.getElementById('addAllProgressLabel');
+  const progressText = document.getElementById('addAllProgressText');
+  const progressFill = document.getElementById('addAllProgressFill');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  if (state.parsedProperties.length === 0) { errEl.textContent = 'No properties to add'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = '⏳ Adding...';
+  progressBox.classList.add('show');
+  let added = 0, failed = 0;
+  const errors = [];
+  const total = state.parsedProperties.length;
+  for (let i = 0; i < total; i++) {
+    const p = state.parsedProperties[i];
+    progressLabel.textContent = 'Uploading: ' + p.title.slice(0, 40) + (p.title.length > 40 ? '...' : '');
+    progressText.textContent = (i + 1) + ' / ' + total;
+    progressFill.style.width = Math.round(((i) / total) * 100) + '%';
+    try {
+      const images = (p.userPhotos && p.userPhotos.length > 0) ? p.userPhotos : p.images;
+      const unitDisplay = p.unitLabel || (p.bedrooms === 0 ? 'Studio' : p.bedrooms + ' Bedroom');
+      let finalTitle = p.title;
+      const lowerTitle = finalTitle.toLowerCase();
+      const lowerUnit = (p.unitLabel || 'studio').toLowerCase();
+      if (!lowerTitle.includes(lowerUnit)) {
+        finalTitle = unitDisplay + ' in ' + p.location.split(',')[0].trim();
+      } else {
+        finalTitle = finalTitle.replace(/,\s*\d+k?\s*/i, ' ').replace(/,\s*near .+$/i, '').replace(/,\s*agent .+$/i, '').replace(/,\s*\d{4,}\s*/g, ' ').trim();
+        if (finalTitle.length > 60) finalTitle = finalTitle.slice(0, 60).trim();
+      }
+      await api('/api/properties', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: finalTitle, description: p.description, location: p.location,
+          price: p.price || 0, bedrooms: p.bedrooms, bathrooms: p.bathrooms,
+          unitLabel: p.unitLabel || null, type: p.type, tiktok_url: p.tiktok_url,
+          agent_phone: p.agent_phone || null, landlord_name: 'Pending Assignment',
+          landlord_phone: '0700000000', landlord_email: null, images: images,
+          isHot: p.isHot || false
+        })
+      });
+      added++;
+    } catch (e) {
+      failed++;
+      errors.push(p.title + ': ' + e.message);
+    }
+    progressFill.style.width = Math.round(((i + 1) / total) * 100) + '%';
+  }
+  setTimeout(() => { progressBox.classList.remove('show'); }, 1000);
+  if (added > 0) {
+    okEl.innerHTML = '✅ <b>' + added + ' propert' + (added === 1 ? 'y' : 'ies') + ' added successfully!</b>' + (failed > 0 ? '<br>⚠️ ' + failed + ' failed.' : '') + '<br>Refresh your dashboard to see them live.';
+    okEl.style.display = 'block';
+    state.parsedProperties = [];
+    document.querySelectorAll('textarea').forEach(t => t.value = '');
+    setTimeout(() => { document.querySelectorAll('[id$="Preview"]').forEach(el => el.innerHTML = ''); }, 2500);
+  } else {
+    errEl.innerHTML = '❌ Failed to add. Errors:<br>' + errors.slice(0, 3).join('<br>');
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '🚀 Try Again';
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  checkAuth();
+});
+</script>
+</body>
+</html>
