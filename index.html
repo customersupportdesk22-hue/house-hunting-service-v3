@@ -1477,7 +1477,7 @@ function startFeaturedAutoScroll() {
     const currentScroll = track.scrollLeft;
     const maxScroll = track.scrollWidth - track.clientWidth;
     if (currentScroll >= maxScroll - 10) {
-      track.scrollTo({ left: 0, behavior: 'smooth' });
+      track.scrollTo({ left: 0, behavior: 'auto' });
     } else {
       track.scrollBy({ left: cardWidth, behavior: 'smooth' });
     }
