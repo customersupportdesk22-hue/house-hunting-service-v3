@@ -152,7 +152,9 @@
   background: var(--accent);
   border-color: var(--accent);
   color: white;
-}.form-card {
+}
+
+.form-card {
   background: white;
   border-radius: 14px;
   padding: 22px;
@@ -242,7 +244,6 @@
   border: 1px solid rgba(21,128,61,0.25);
 }
 
-/* HOT BADGE (NEW) */
 .hot-badge {
   display: inline-flex; align-items: center; gap: 3px;
   background: linear-gradient(135deg, #ef4444, #dc2626);
@@ -535,6 +536,74 @@
     font-size: 11px; color: var(--muted); margin-top: 6px; text-align: center;
   }
 
+  .profile-card {
+    background: white; border-radius: 14px; padding: 24px;
+    border: 1px solid var(--border); text-align: center;
+    margin-bottom: 16px; box-shadow: var(--shadow-sm);
+  }
+  .profile-photo-preview {
+    width: 120px; height: 120px; border-radius: 50%;
+    object-fit: cover; background: var(--bg);
+    border: 3px solid var(--border);
+    margin: 0 auto 16px; display: block;
+  }
+
+  .status-type-row {
+    display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .status-type-btn {
+    flex: 1; min-width: 100px; padding: 12px 14px;
+    border-radius: 10px; background: white;
+    border: 2px solid var(--border); color: var(--text);
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    text-align: center; transition: all 0.2s;
+  }
+  .status-type-btn:hover { border-color: var(--accent); }
+  .status-type-btn.active {
+    background: var(--accent-light); border-color: var(--accent);
+    color: var(--accent-dark);
+  }
+  .status-item {
+    background: white; border-radius: 12px;
+    border: 1px solid var(--border); padding: 12px;
+    margin-bottom: 10px; display: flex; gap: 12px;
+    align-items: flex-start; box-shadow: var(--shadow-sm);
+  }
+  .status-thumb {
+    width: 70px; height: 70px; border-radius: 10px;
+    object-fit: cover; background: var(--border); flex-shrink: 0;
+  }
+  .status-info { flex: 1; min-width: 0; }
+  .status-info h4 {
+    font-size: 13.5px; font-weight: 800; margin-bottom: 4px;
+    color: var(--text); display: flex; align-items: center;
+    gap: 6px; flex-wrap: wrap;
+  }
+  .status-info p { font-size: 11.5px; color: var(--muted); margin-bottom: 2px; }
+  .status-type-tag {
+    display: inline-block; font-size: 9.5px; padding: 2px 8px;
+    border-radius: 5px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .status-type-tag.photo { background: #dbeafe; color: #2563eb; }
+  .status-type-tag.video { background: #fee2e2; color: #dc2626; }
+  .status-type-tag.text { background: #fef3c7; color: #b45309; }
+  .status-type-tag.property { background: #dcfce7; color: #15803d; }
+  .view-count-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--bg); color: var(--text);
+    padding: 4px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 800;
+    border: 1px solid var(--border);
+  }
+  .status-text-preview {
+    background: linear-gradient(135deg, #1a6b3c, #14532d);
+    color: white; padding: 14px; border-radius: 10px;
+    font-size: 13px; font-weight: 700; text-align: center;
+    width: 70px; height: 70px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+
   @media (max-width: 600px) {
     .grid-2 { grid-template-columns: 1fr; }
     .enquiry-grid { grid-template-columns: 1fr; }
@@ -582,6 +651,8 @@
     <button class="tab" onclick="switchTab(this, 'add-property')">➕ Add Property</button>
     <button class="tab" onclick="switchTab(this, 'properties')">🏠 My Properties</button>
     <button class="tab" onclick="switchTab(this, 'landmarks')">🗺️ Landmarks</button>
+    <button class="tab" onclick="switchTab(this, 'profile')">👤 Profile</button>
+    <button class="tab" onclick="switchTab(this, 'status')">📸 Status</button>
   </div>
 
   <div class="panel active" id="panel-bookings">
@@ -826,9 +897,120 @@
       <div class="loading"><div class="spinner"></div>Loading landmarks...</div>
     </div>
   </div>
-</div>
 
-<div class="modal-overlay" id="editModal">
+  <div class="panel" id="panel-profile">
+    <div class="section-header">
+      <h2>👤 My Profile</h2>
+    </div>
+
+    <div class="profile-card">
+      <img id="profilePhotoPreview" class="profile-photo-preview" 
+           src="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png" alt="Profile">
+    </div>
+
+    <div class="form-card">
+      <h3>Edit Profile</h3>
+      <div class="alert err" id="profileError"></div>
+      <div class="alert ok" id="profileSuccess"></div>
+
+      <div class="field">
+        <label>Profile Photo</label>
+        <label class="image-upload" for="profilePhotoInput">
+          <input type="file" id="profilePhotoInput" accept="image/*" onchange="handleProfilePhotoSelect(event)">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">Tap to change profile photo</div>
+        </label>
+      </div>
+
+      <div class="field">
+        <label>Display Name *</label>
+        <input type="text" id="profileDisplayName" placeholder="e.g., Delta Property Agency">
+      </div>
+
+      <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; margin-bottom:14px; cursor:pointer;">
+        <input type="checkbox" id="profileVerified" style="width:20px; height:20px; accent-color:#1a6b3c;">
+        <span style="font-size:13px; font-weight:700; color:#1a6b3c;">✅ Show Verified Badge</span>
+      </label>
+
+      <button class="btn btn-primary" style="width:100%; padding:14px;" id="profileSaveBtn" onclick="saveProfile()">
+        💾 Save Profile
+      </button>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-status">
+    <div class="section-header">
+      <h2>📸 Status</h2>
+      <span class="count" id="statusCount">-</span>
+    </div>
+
+    <div class="form-card">
+      <h3>➕ Post New Status</h3>
+      <div class="alert err" id="statusError"></div>
+      <div class="alert ok" id="statusSuccess"></div>
+
+      <div class="field">
+        <label>Type</label>
+        <div class="status-type-row" id="statusTypeRow">
+          <button type="button" class="status-type-btn active" data-type="photo" onclick="selectStatusType(this, 'photo')">📸 Photo</button>
+          <button type="button" class="status-type-btn" data-type="video" onclick="selectStatusType(this, 'video')">🎬 Video</button>
+          <button type="button" class="status-type-btn" data-type="text" onclick="selectStatusType(this, 'text')">📝 Text</button>
+          <button type="button" class="status-type-btn" data-type="property" onclick="selectStatusType(this, 'property')">🏠 Property</button>
+        </div>
+      </div>
+
+      <div class="field" id="statusMediaField">
+        <label>Upload Media</label>
+        <label class="image-upload" for="statusMediaInput">
+          <input type="file" id="statusMediaInput" accept="image/*" onchange="handleStatusMediaSelect(event)">
+          <div class="upload-icon" id="statusMediaIcon">📷</div>
+          <div class="upload-text" id="statusMediaText">Tap to select photo</div>
+        </label>
+        <div class="image-preview" id="statusMediaPreview"></div>
+      </div>
+
+      <div class="field" id="statusTiktokField" style="display:none;">
+        <label>Or Download from TikTok</label>
+        <input type="url" id="statusTiktokUrl" placeholder="Paste TikTok URL">
+        <button type="button" class="btn-tiktok" style="width:100%; margin-top:8px;" onclick="downloadStatusTikTok()">
+          📥 Download & Save from TikTok
+        </button>
+        <div class="upload-progress" id="statusTiktokProgress">
+          <div class="bar"><div class="fill" id="statusTiktokProgressFill"></div></div>
+          <div class="label" id="statusTiktokProgressLabel">Preparing...</div>
+        </div>
+      </div>
+
+      <div class="field" id="statusTextField" style="display:none;">
+        <label>Status Text</label>
+        <textarea id="statusTextContent" placeholder="e.g., 3 new bedsitters in Ruiru — call 0738 264 143"></textarea>
+      </div>
+
+      <div class="field" id="statusPropertyField" style="display:none;">
+        <label>Select Property</label>
+        <select id="statusPropertySelect">
+          <option value="">Loading properties...</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Caption (shown under circle) *</label>
+        <input type="text" id="statusCaption" placeholder="e.g., New in Karen">
+      </div>
+
+      <button class="btn btn-primary" style="width:100%; padding:14px;" id="statusPostBtn" onclick="postStatus()">
+        🚀 Post Status
+      </button>
+    </div>
+
+    <div class="section-header" style="margin-top:20px;">
+      <h2>📋 Active Statuses</h2>
+    </div>
+    <div id="statusList">
+      <div class="loading"><div class="spinner"></div>Loading...</div>
+    </div>
+  </div>
+</div><div class="modal-overlay" id="editModal">
   <div class="modal">
     <h2>✏️ Edit Property</h2>
     <p>Update property details and photos</p>
@@ -872,11 +1054,12 @@
       </select>
     </div>
 
-    <!-- HOT & TRENDING CHECKBOX (NEW) -->
     <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; margin-bottom:14px; cursor:pointer;">
       <input type="checkbox" id="editIsHot" style="width:20px; height:20px; accent-color:#1a6b3c;">
       <span style="font-size:13px; font-weight:700; color:#1a6b3c;">🔥 Mark as Hot & Trending (Featured)</span>
-    </label>    <div class="field">
+    </label>
+
+    <div class="field">
       <label>Description <span id="editDescBadge"></span></label>
       <textarea id="editDescription"></textarea>
       <button type="button" class="btn-ai-desc" id="editGenDescBtn" onclick="regenerateDescription()">
@@ -963,9 +1146,7 @@
       Cancel
     </button>
   </div>
-</div>
-
-<script>
+</div><script>
 const API_BASE = 'https://house-hunt-server.onrender.com';
 
 let state = {
@@ -1016,6 +1197,8 @@ function switchTab(btn, tabName) {
   if (tabName === 'bookings') loadEnquiries();
   if (tabName === 'properties') loadMyProperties();
   if (tabName === 'landmarks') loadLandmarks();
+  if (tabName === 'profile') loadProfile();
+  if (tabName === 'status') { loadStatuses(); loadPropertiesForStatus(); }
 }
 
 function escapeHtml(str) {
@@ -1027,13 +1210,14 @@ function closeModal(id) { document.getElementById(id).classList.remove('show'); 
 
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
-});async function loadEnquiries() {
+});
+
+async function loadEnquiries() {
   const list = document.getElementById('enquiriesList');
   const count = document.getElementById('enquiryCount');
   const errEl = document.getElementById('enquiriesError');
   list.innerHTML = '<div class="loading"><div class="spinner"></div>Loading enquiries...</div>';
   errEl.style.display = 'none';
-
   try {
     const res = await api('/api/admin/enquiries?limit=200');
     state.allEnquiries = res.enquiries || [];
@@ -1056,27 +1240,16 @@ function filterEnquiries(btn, filter) {
 function renderEnquiries() {
   const list = document.getElementById('enquiriesList');
   let items = state.allEnquiries.slice();
-
   if (state.currentEnquiryFilter === 'viewing') items = items.filter(e => e.type === 'viewing');
   else if (state.currentEnquiryFilter === 'landlord') items = items.filter(e => e.type === 'landlord');
   else if (state.currentEnquiryFilter === 'new') items = items.filter(e => e.status === 'new');
   else if (state.currentEnquiryFilter === 'handled') items = items.filter(e => e.status === 'handled');
-
-  if (items.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="icon">📭</div>No enquiries found</div>';
-    return;
-  }
-
+  if (items.length === 0) { list.innerHTML = '<div class="empty-state"><div class="icon">📭</div>No enquiries found</div>'; return; }
   list.innerHTML = items.map(e => {
-    const typeBadge = e.type === 'viewing'
-      ? '<span class="enquiry-status-badge status-viewing">📅 Viewing</span>'
-      : '<span class="enquiry-status-badge status-landlord">📞 Landlord</span>';
-    const statusBadge = e.status === 'handled'
-      ? '<span class="enquiry-status-badge status-handled">✅ Handled</span>'
-      : '<span class="enquiry-status-badge status-new">🔵 New</span>';
+    const typeBadge = e.type === 'viewing' ? '<span class="enquiry-status-badge status-viewing">📅 Viewing</span>' : '<span class="enquiry-status-badge status-landlord">📞 Landlord</span>';
+    const statusBadge = e.status === 'handled' ? '<span class="enquiry-status-badge status-handled">✅ Handled</span>' : '<span class="enquiry-status-badge status-new">🔵 New</span>';
     const canHandle = e.status !== 'handled';
     const timeAgo = formatTimeAgo(e.created_at);
-
     return `
       <div class="enquiry-item">
         <div class="enquiry-head">
@@ -1084,9 +1257,7 @@ function renderEnquiries() {
             <div class="enquiry-ref">${escapeHtml(e.reference)}</div>
             <div class="enquiry-customer">👤 <b>${escapeHtml(e.tenant_name)}</b> · 📞 ${escapeHtml(e.tenant_phone)}</div>
           </div>
-          <div style="text-align:right; display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
-            ${typeBadge}${statusBadge}
-          </div>
+          <div style="text-align:right; display:flex; flex-direction:column; gap:6px; align-items:flex-end;">${typeBadge}${statusBadge}</div>
         </div>
         <div class="enquiry-grid">
           ${e.property_title ? `<div><span class="label">Property</span><span class="value">${escapeHtml(e.property_title)}</span></div>` : ''}
@@ -1102,8 +1273,7 @@ function renderEnquiries() {
           <a href="https://wa.me/${e.tenant_phone.replace(/\D/g, '').replace(/^0/, '254')}?text=Hi%20${encodeURIComponent(e.tenant_name)}%2C%20regarding%20your%20enquiry%20${encodeURIComponent(e.reference)}..." target="_blank" rel="noopener" class="btn btn-verify" style="text-decoration:none;">💬 WhatsApp</a>
           ${canHandle ? `<button class="btn btn-complete" onclick="markEnquiryHandled('${e.id}')">✅ Mark Handled</button>` : ''}
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
@@ -1121,29 +1291,23 @@ function formatTimeAgo(dateStr) {
 
 async function markEnquiryHandled(id) {
   if (!confirm('Mark this enquiry as handled?')) return;
-  try {
-    await api('/api/admin/enquiries/' + id + '/handle', { method: 'POST' });
-    loadEnquiries();
-  } catch (e) { alert('Failed: ' + e.message); }
-}function handleImageSelect(event) {
+  try { await api('/api/admin/enquiries/' + id + '/handle', { method: 'POST' }); loadEnquiries(); }
+  catch (e) { alert('Failed: ' + e.message); }
+}
+
+function handleImageSelect(event) {
   const files = Array.from(event.target.files);
   const remaining = 5 - state.selectedImages.length;
   files.slice(0, remaining).forEach(file => {
     const reader = new FileReader();
-    reader.onload = (e) => {
-      state.selectedImages.push(e.target.result);
-      renderImagePreviews();
-    };
+    reader.onload = (e) => { state.selectedImages.push(e.target.result); renderImagePreviews(); };
     reader.readAsDataURL(file);
   });
 }
 
 function renderImagePreviews() {
   document.getElementById('imagePreview').innerHTML = state.selectedImages.map((img, i) => `
-    <div class="preview-item">
-      <img src="${img}">
-      <button class="remove" onclick="removeImage(${i})">×</button>
-    </div>
+    <div class="preview-item"><img src="${img}"><button class="remove" onclick="removeImage(${i})">×</button></div>
   `).join('');
 }
 
@@ -1285,7 +1449,6 @@ function renderMyProperties() {
     const hotBadge = (p.isHot === true || p.isHot === 'true') ? '<span class="hot-badge">🔥 HOT</span>' : '';
     const isSelected = state.selectedPropertyIds.has(p.id);
     const landlordInfo = p.landlord_name ? `<p style="font-size:11.5px; color:var(--muted);">🏠 Landlord: <b>${escapeHtml(p.landlord_name)}</b> · ${escapeHtml(p.landlord_phone || '')}</p>` : '';
-
     return `
       <div class="property-item">
         <div class="prop-checkbox-wrap">
@@ -1300,14 +1463,11 @@ function renderMyProperties() {
           ${landlordInfo}
           <div class="actions">
             <button class="btn btn-edit" onclick="openEdit('${p.id}')">✏️ Edit</button>
-            <button class="btn btn-outline" onclick="togglePropertyStatus('${p.id}', '${isRented ? 'available' : 'rented'}')">
-              ${isRented ? '✅ Mark Available' : '🔒 Mark Rented'}
-            </button>
+            <button class="btn btn-outline" onclick="togglePropertyStatus('${p.id}', '${isRented ? 'available' : 'rented'}')">${isRented ? '✅ Mark Available' : '🔒 Mark Rented'}</button>
             <button class="btn btn-danger" onclick="deleteProperty('${p.id}')">🗑️ Delete</button>
           </div>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
@@ -1358,18 +1518,13 @@ async function deleteSelectedProperties() {
 
 async function deleteProperty(id) {
   if (!confirm('Delete this property?')) return;
-  try {
-    await api('/api/properties/' + id, { method: 'DELETE' });
-    state.selectedPropertyIds.delete(id);
-    loadMyProperties();
-  } catch (e) { alert('Failed: ' + e.message); }
+  try { await api('/api/properties/' + id, { method: 'DELETE' }); state.selectedPropertyIds.delete(id); loadMyProperties(); }
+  catch (e) { alert('Failed: ' + e.message); }
 }
 
 async function togglePropertyStatus(id, newStatus) {
-  try {
-    await api('/api/properties/' + id + '/status', { method: 'POST', body: JSON.stringify({ status: newStatus }) });
-    loadMyProperties();
-  } catch (e) { alert('Failed: ' + e.message); }
+  try { await api('/api/properties/' + id + '/status', { method: 'POST', body: JSON.stringify({ status: newStatus }) }); loadMyProperties(); }
+  catch (e) { alert('Failed: ' + e.message); }
 }
 
 function openEdit(id) {
@@ -1401,7 +1556,9 @@ function openEdit(id) {
   document.getElementById('aiPrompt').value = '';
   document.getElementById('aiPreview').innerHTML = '';
   openModal('editModal');
-}function handleEditImageSelect(event) {
+}
+
+function handleEditImageSelect(event) {
   const files = Array.from(event.target.files);
   const remaining = 5 - state.editImages.length;
   files.slice(0, remaining).forEach(file => {
@@ -1413,10 +1570,7 @@ function openEdit(id) {
 
 function renderEditImagePreviews() {
   document.getElementById('editImagePreview').innerHTML = state.editImages.map((img, i) => `
-    <div class="preview-item">
-      <img src="${img}">
-      <button class="remove" onclick="removeEditImage(${i})">×</button>
-    </div>
+    <div class="preview-item"><img src="${img}"><button class="remove" onclick="removeEditImage(${i})">×</button></div>
   `).join('');
 }
 
@@ -1497,7 +1651,6 @@ async function saveEdit() {
   const location = document.getElementById('editLocation').value.trim();
   const price = document.getElementById('editPrice').value;
   if (!title || !location || !price) { errEl.textContent = 'Title, Location, Price required'; errEl.style.display = 'block'; return; }
-
   const updateData = {
     title, location, price,
     bedrooms: Number(document.getElementById('editBedrooms').value) || 0,
@@ -1512,7 +1665,6 @@ async function saveEdit() {
     isHot: document.getElementById('editIsHot').checked
   };
   if (state.editImages.length > 0) updateData.images = state.editImages;
-
   btn.disabled = true; btn.textContent = '💾 Saving...';
   try {
     await api('/api/properties/' + id, { method: 'PUT', body: JSON.stringify(updateData) });
@@ -1617,6 +1769,215 @@ async function deleteLandmark(id) {
   if (!confirm('Delete this landmark?')) return;
   try { await api('/api/admin/landmarks/' + id, { method: 'DELETE' }); loadLandmarks(); }
   catch (e) { alert('Failed: ' + e.message); }
+}
+
+// ============================================================
+// PROFILE
+// ============================================================
+let profilePhotoBase64 = null;
+
+async function loadProfile() {
+  try {
+    const res = await api('/api/profile');
+    const p = res.profile || {};
+    document.getElementById('profilePhotoPreview').src = p.photo_url || 'https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png';
+    document.getElementById('profileDisplayName').value = p.display_name || 'Delta Property Agency';
+    document.getElementById('profileVerified').checked = p.verified === true;
+  } catch (e) { console.error('Load profile failed:', e); }
+}
+
+function handleProfilePhotoSelect(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  event.target.value = '';
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    profilePhotoBase64 = e.target.result;
+    document.getElementById('profilePhotoPreview').src = profilePhotoBase64;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveProfile() {
+  const errEl = document.getElementById('profileError');
+  const okEl = document.getElementById('profileSuccess');
+  const btn = document.getElementById('profileSaveBtn');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  const display_name = document.getElementById('profileDisplayName').value.trim();
+  const verified = document.getElementById('profileVerified').checked;
+  if (!display_name) { errEl.textContent = 'Display name required'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = '💾 Saving...';
+  try {
+    const payload = { display_name, verified };
+    if (profilePhotoBase64) payload.photo_url = profilePhotoBase64;
+    await api('/api/profile', { method: 'PUT', body: JSON.stringify(payload) });
+    okEl.textContent = '✅ Profile saved!'; okEl.style.display = 'block';
+    profilePhotoBase64 = null;
+    loadProfile();
+  } catch (e) {
+    errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block';
+  } finally { btn.disabled = false; btn.textContent = '💾 Save Profile'; }
+}
+
+// ============================================================
+// STATUS
+// ============================================================
+let currentStatusType = 'photo';
+let statusMediaBase64 = null;
+let statusMediaMimeType = '';
+
+function selectStatusType(btn, type) {
+  currentStatusType = type;
+  document.querySelectorAll('.status-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('statusMediaField').style.display = (type === 'photo' || type === 'video') ? 'block' : 'none';
+  document.getElementById('statusTiktokField').style.display = (type === 'video') ? 'block' : 'none';
+  document.getElementById('statusTextField').style.display = (type === 'text') ? 'block' : 'none';
+  document.getElementById('statusPropertyField').style.display = (type === 'property') ? 'block' : 'none';
+  if (type === 'photo') {
+    document.getElementById('statusMediaInput').accept = 'image/*';
+    document.getElementById('statusMediaIcon').textContent = '📷';
+    document.getElementById('statusMediaText').textContent = 'Tap to select photo';
+  } else if (type === 'video') {
+    document.getElementById('statusMediaInput').accept = 'video/*';
+    document.getElementById('statusMediaIcon').textContent = '🎬';
+    document.getElementById('statusMediaText').textContent = 'Tap to select video (max 30 seconds)';
+  }
+  if (type === 'property') loadPropertiesForStatus();
+}
+
+function handleStatusMediaSelect(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  event.target.value = '';
+  const maxBytes = 20 * 1024 * 1024;
+  if (file.size > maxBytes) { alert('File too large. Max 20 MB.'); return; }
+  statusMediaMimeType = file.type || '';
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    statusMediaBase64 = e.target.result;
+    const preview = document.getElementById('statusMediaPreview');
+    if (currentStatusType === 'video') {
+      preview.innerHTML = '<div class="preview-item" style="width:120px;height:120px;"><video src="' + statusMediaBase64 + '" style="width:100%;height:100%;object-fit:cover;" muted></video></div>';
+    } else {
+      preview.innerHTML = '<div class="preview-item" style="width:120px;height:120px;"><img src="' + statusMediaBase64 + '"></div>';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function downloadStatusTikTok() {
+  const url = document.getElementById('statusTiktokUrl').value.trim();
+  if (!url) { alert('Paste a TikTok URL first'); return; }
+  const progressBox = document.getElementById('statusTiktokProgress');
+  const progressFill = document.getElementById('statusTiktokProgressFill');
+  const progressLabel = document.getElementById('statusTiktokProgressLabel');
+  progressBox.classList.add('show');
+  progressFill.style.width = '20%';
+  progressLabel.textContent = '📥 Downloading from TikTok...';
+  try {
+    const res = await api('/api/download-tiktok', { method: 'POST', body: JSON.stringify({ tiktok_url: url }) });
+    statusMediaBase64 = res.url;
+    statusMediaMimeType = 'video/mp4';
+    progressFill.style.width = '100%';
+    progressLabel.textContent = '✅ Saved! (' + res.size_mb + ' MB)';
+    setTimeout(() => { progressBox.classList.remove('show'); progressFill.style.width = '0%'; }, 2000);
+  } catch (e) {
+    progressBox.classList.remove('show'); progressFill.style.width = '0%';
+    alert('TikTok failed: ' + e.message);
+  }
+}
+
+async function loadPropertiesForStatus() {
+  const sel = document.getElementById('statusPropertySelect');
+  sel.innerHTML = '<option value="">Loading...</option>';
+  try {
+    const res = await api('/api/properties/all');
+    const props = res.properties || [];
+    sel.innerHTML = '<option value="">-- Select a property --</option>' +
+      props.map(p => '<option value="' + p.id + '">' + escapeHtml(p.title) + ' — ' + escapeHtml(p.location) + '</option>').join('');
+  } catch (e) { sel.innerHTML = '<option value="">Failed to load</option>'; }
+}
+
+async function postStatus() {
+  const errEl = document.getElementById('statusError');
+  const okEl = document.getElementById('statusSuccess');
+  const btn = document.getElementById('statusPostBtn');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  const caption = document.getElementById('statusCaption').value.trim();
+  if (!caption) { errEl.textContent = 'Caption required'; errEl.style.display = 'block'; return; }
+  const payload = { type: currentStatusType, caption };
+  if (currentStatusType === 'photo' || currentStatusType === 'video') {
+    if (!statusMediaBase64) { errEl.textContent = 'Please select media'; errEl.style.display = 'block'; return; }
+    payload.media_url = statusMediaBase64;
+  }
+  if (currentStatusType === 'text') {
+    const text = document.getElementById('statusTextContent').value.trim();
+    if (!text) { errEl.textContent = 'Enter status text'; errEl.style.display = 'block'; return; }
+    payload.text_content = text;
+  }
+  if (currentStatusType === 'property') {
+    const pid = document.getElementById('statusPropertySelect').value;
+    if (!pid) { errEl.textContent = 'Select a property'; errEl.style.display = 'block'; return; }
+    payload.property_id = pid;
+  }
+  btn.disabled = true; btn.textContent = '⏳ Posting...';
+  try {
+    await api('/api/statuses', { method: 'POST', body: JSON.stringify(payload) });
+    okEl.textContent = '✅ Status posted!'; okEl.style.display = 'block';
+    document.getElementById('statusCaption').value = '';
+    document.getElementById('statusTextContent').value = '';
+    document.getElementById('statusMediaPreview').innerHTML = '';
+    statusMediaBase64 = null;
+    loadStatuses();
+  } catch (e) {
+    errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block';
+  } finally { btn.disabled = false; btn.textContent = '🚀 Post Status'; }
+}
+
+async function loadStatuses() {
+  const list = document.getElementById('statusList');
+  const count = document.getElementById('statusCount');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+  try {
+    const res = await api('/api/statuses');
+    const items = res.statuses || [];
+    count.textContent = items.length + ' active';
+    if (items.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="icon">📸</div>No active statuses</div>';
+      return;
+    }
+    list.innerHTML = items.map(s => {
+      let thumb = '';
+      if (s.type === 'photo' || s.type === 'property') {
+        const src = s.media_url || (s.property_data && s.property_data.image) || 'https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png';
+        thumb = '<img class="status-thumb" src="' + src + '">';
+      } else if (s.type === 'video') {
+        thumb = '<video class="status-thumb" src="' + (s.media_url || '') + '" muted></video>';
+      } else {
+        thumb = '<div class="status-text-preview">📝</div>';
+      }
+      const expiresIn = Math.max(0, Math.floor((new Date(s.expires_at) - new Date()) / (24 * 60 * 60 * 1000)));
+      return '<div class="status-item">' + thumb +
+        '<div class="status-info"><h4>' + escapeHtml(s.caption) +
+        '<span class="status-type-tag ' + s.type + '">' + s.type + '</span></h4>' +
+        '<p>Expires in ' + expiresIn + ' days</p>' +
+        '<div class="actions" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<span class="view-count-badge">👁️ ' + (s.view_count || 0) + ' views</span>' +
+        '<button class="btn btn-danger" onclick="deleteStatus(\'' + s.id + '\')">🗑️ Delete</button>' +
+        '</div></div></div>';
+    }).join('');
+  } catch (e) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>Failed: ' + e.message + '</div>';
+  }
+}
+
+async function deleteStatus(id) {
+  if (!confirm('Delete this status?')) return;
+  try {
+    await api('/api/statuses/' + id, { method: 'DELETE' });
+    loadStatuses();
+  } catch (e) { alert('Failed: ' + e.message); }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
