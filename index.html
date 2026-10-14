@@ -640,7 +640,9 @@
         <div class="sub">FINDING THE RIGHT HOME</div>
       </div>
     </div>
-    <button class="btn btn-outline" id="adminBtn" onclick="openAdminLogin()">Agent</button>
+    <button class="profile-btn" id="profileBtn" onclick="window.location.href='/profile.html'">
+  <img src="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png" alt="Profile">
+</button>
   </div>
 </header>
 
@@ -1832,7 +1834,7 @@ function openAdminLogin() {
     if (action) {
       state.token = null; state.user = null;
       localStorage.removeItem('hh_token'); localStorage.removeItem('hh_user');
-      document.getElementById('adminBtn').textContent = 'Agent'; alert('Logged out');
+      
     } else {
       const redirect = state.user.role === 'landlord' ? '/landlord.html' : '/dashboard.html';
       window.location.href = redirect;
@@ -1854,7 +1856,6 @@ async function adminLogin() {
     state.token = res.token; state.user = res.user;
     localStorage.setItem('hh_token', res.token);
     localStorage.setItem('hh_user', JSON.stringify(res.user));
-    document.getElementById('adminBtn').textContent = '👤 ' + res.user.name.split(' ')[0];
     closeModal('adminModal');
     setTimeout(() => { window.location.href = res.redirect || '/dashboard.html'; }, 500);
   } catch (e) {
@@ -1889,13 +1890,185 @@ document.addEventListener('visibilitychange', () => {
     startAutoRefresh(); loadFeatured();
   }
 });
+// ============================================================
+// STATUS FEATURE
+// ============================================================
+let statusState = {
+  statuses: [],
+  currentIndex: 0,
+  autoAdvanceTimer: null,
+  profile: {
+    photo_url: 'https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png',
+    display_name: 'Delta Property Agency',
+    verified: false
+  }
+};
+
+function getDeviceId() {
+  let id = localStorage.getItem('hh_device_id');
+  if (!id) {
+    id = 'dev_' + Math.random().toString(36).substr(2, 12) + Date.now().toString(36);
+    localStorage.setItem('hh_device_id', id);
+  }
+  return id;
+}
+
+async function loadAgentProfile() {
+  try {
+    const res = await fetch(API_BASE + '/api/profile');
+    const data = await res.json();
+    if (data.profile) {
+      statusState.profile = data.profile;
+      const btn = document.getElementById('profileBtn');
+      if (btn) btn.innerHTML = '<img src="' + data.profile.photo_url + '">';
+      const storyPhoto = document.getElementById('storyUserPhoto');
+      if (storyPhoto) storyPhoto.src = data.profile.photo_url;
+      const storyName = document.getElementById('storyUserName');
+      if (storyName) storyName.textContent = data.profile.display_name;
+    }
+  } catch (e) { console.log('Profile load failed:', e.message); }
+}
+
+async function loadStatuses() {
+  const row = document.getElementById('statusRow');
+  if (!row) return;
+  try {
+    const res = await fetch(API_BASE + '/api/statuses');
+    const data = await res.json();
+    statusState.statuses = data.statuses || [];
+    if (statusState.statuses.length === 0) { row.innerHTML = ''; return; }
+    const seenList = JSON.parse(localStorage.getItem('hh_seen_statuses') || '[]');
+    row.innerHTML = statusState.statuses.map((s, i) => {
+      let inner = '';
+      if (s.type === 'photo' || s.type === 'property') {
+        const img = s.media_url || (s.property_data && s.property_data.image) || 'https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png';
+        inner = '<img src="' + img + '" alt="">';
+      } else if (s.type === 'video') {
+        inner = '<video src="' + (s.media_url || '') + '" muted></video>';
+      } else {
+        inner = '<div class="status-circle-inner text-preview">📝</div>';
+      }
+      const isSeen = seenList.includes(s.id);
+      return '<div class="status-circle-wrap" onclick="openStory(' + i + ')">' +
+        '<div class="status-ring' + (isSeen ? ' seen' : '') + '">' +
+          (s.type === 'text' ? '<div class="status-circle-inner text-preview">📝</div>' : '<div class="status-circle-inner">' + inner + '</div>') +
+        '</div>' +
+        '<div class="status-circle-label">' + escapeHtml(s.caption) + '</div>' +
+      '</div>';
+    }).join('');
+  } catch (e) { row.innerHTML = ''; }
+}
+
+function markStatusSeen(id) {
+  let seen = JSON.parse(localStorage.getItem('hh_seen_statuses') || '[]');
+  if (!seen.includes(id)) {
+    seen.push(id);
+    localStorage.setItem('hh_seen_statuses', JSON.stringify(seen));
+  }
+}
+
+function openStory(index) {
+  if (index < 0 || index >= statusState.statuses.length) return;
+  statusState.currentIndex = index;
+  const status = statusState.statuses[index];
+  document.getElementById('storyViewer').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  renderProgressBars();
+  renderStoryContent(status);
+  markStatusSeen(status.id);
+  recordStatusView(status.id);
+  startAutoAdvance(status);
+}
+
+function renderProgressBars() {
+  const row = document.getElementById('storyProgressRow');
+  row.innerHTML = statusState.statuses.map((_, i) => {
+    let fillClass = i < statusState.currentIndex ? 'filled' : '';
+    return '<div class="story-progress-bar"><div class="story-progress-fill ' + fillClass + '" id="progFill-' + i + '"></div></div>';
+  }).join('');
+}
+
+function renderStoryContent(status) {
+  const content = document.getElementById('storyContent');
+  const caption = document.getElementById('storyCaption');
+  const captionText = document.getElementById('storyCaptionText');
+  const captionBtn = document.getElementById('storyCaptionBtn');
+  if (status.type === 'photo' || status.type === 'property') {
+    const img = status.media_url || (status.property_data && status.property_data.image) || '';
+    content.innerHTML = '<img src="' + img + '" alt="">';
+  } else if (status.type === 'video') {
+    content.innerHTML = '<video src="' + (status.media_url || '') + '" autoplay muted playsinline></video>';
+  } else {
+    content.innerHTML = '<div class="story-text-content">' + escapeHtml(status.text_content || '') + '</div>';
+  }
+  captionText.textContent = status.caption;
+  caption.style.display = 'block';
+  if (status.type === 'property' && status.property_data) {
+    captionBtn.innerHTML = '<a href="#" onclick="event.preventDefault(); closeStory(); openPropertyView(\'' + status.property_data.id + '\');" class="story-property-btn">View Property →</a>';
+  } else {
+    captionBtn.innerHTML = '';
+  }
+}
+
+function startAutoAdvance(status) {
+  clearStoryTimers();
+  let duration = 5000;
+  if (status.type === 'video') duration = 30000;
+  const fillEl = document.getElementById('progFill-' + statusState.currentIndex);
+  if (fillEl) {
+    fillEl.style.transition = 'none';
+    fillEl.style.width = '0%';
+    setTimeout(() => {
+      fillEl.style.transition = 'width ' + duration + 'ms linear';
+      fillEl.style.width = '100%';
+    }, 50);
+  }
+  statusState.autoAdvanceTimer = setTimeout(() => { nextStory(); }, duration);
+}
+
+function clearStoryTimers() {
+  if (statusState.autoAdvanceTimer) { clearTimeout(statusState.autoAdvanceTimer); statusState.autoAdvanceTimer = null; }
+}
+
+function nextStory() {
+  if (statusState.currentIndex < statusState.statuses.length - 1) {
+    openStory(statusState.currentIndex + 1);
+  } else { closeStory(); }
+}
+
+function prevStory() {
+  if (statusState.currentIndex > 0) openStory(statusState.currentIndex - 1);
+}
+
+function closeStory() {
+  clearStoryTimers();
+  document.getElementById('storyViewer').classList.remove('show');
+  document.body.style.overflow = '';
+  document.getElementById('storyContent').innerHTML = '';
+  loadStatuses();
+}
+
+async function recordStatusView(statusId) {
+  try {
+    await fetch(API_BASE + '/api/statuses/' + statusId + '/view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ device_id: getDeviceId() })
+    });
+  } catch (e) {}
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeStory();
+  if (e.key === 'ArrowRight') nextStory();
+  if (e.key === 'ArrowLeft') prevStory();
+});
 
 window.addEventListener('DOMContentLoaded', () => {
-  if (state.user) {
-    document.getElementById('adminBtn').textContent = '👤 ' + state.user.name.split(' ')[0];
-  }
   loadFeatured();
   loadProperties();
+  loadAgentProfile();
+  loadStatuses();
   if (shouldAskLocation()) {
     setTimeout(() => { showLocationModal(); }, 2500);
   } else if (localStorage.getItem('hh_location_allowed') === 'true' && navigator.geolocation) {
@@ -1913,6 +2086,23 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   startAutoRefresh();
 });
-</script>
+
+</script><div class="story-viewer" id="storyViewer">
+  <div class="story-progress-row" id="storyProgressRow"></div>
+  <div class="story-topbar">
+    <div class="story-user">
+      <img id="storyUserPhoto" src="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png" alt="">
+      <div class="story-user-name" id="storyUserName">Delta Property Agency</div>
+    </div>
+    <button class="story-close" onclick="closeStory()">✕</button>
+  </div>
+  <div class="story-content" id="storyContent"></div>
+  <div class="story-tap-left" onclick="prevStory()"></div>
+  <div class="story-tap-right" onclick="nextStory()"></div>
+  <div class="story-caption" id="storyCaption" style="display:none;">
+    <div id="storyCaptionText"></div>
+    <div id="storyCaptionBtn"></div>
+  </div>
+</div>
 </body>
 </html>
