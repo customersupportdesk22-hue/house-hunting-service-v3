@@ -1454,14 +1454,43 @@ function slideScroll(trackId, direction) {
   track.scrollBy({ left: cardWidth * direction, behavior: 'smooth' });
 }
 
-function slideJump(trackId, index) {
+function slideJump(trackId, index) { 
   const track = document.getElementById(trackId);
   if (!track) return;
   const cards = track.querySelectorAll('.slide-card');
   if (!cards[index]) return;
   const cardWidth = cards[0].offsetWidth + 12;
   track.scrollTo({ left: cardWidth * index, behavior: 'smooth' });
+}// ============================================================
+// AUTO-SCROLL FEATURED CAROUSEL
+// ============================================================
+let featuredAutoScrollTimer = null;
+
+function startFeaturedAutoScroll() {
+  if (featuredAutoScrollTimer) clearInterval(featuredAutoScrollTimer);
+  featuredAutoScrollTimer = setInterval(() => {
+    const track = document.getElementById('featuredSlideTrack');
+    if (!track) return;
+    const cards = track.querySelectorAll('.slide-card');
+    if (cards.length < 2) return;
+    const cardWidth = cards[0].offsetWidth + 12;
+    const currentScroll = track.scrollLeft;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    if (currentScroll >= maxScroll - 10) {
+      track.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      track.scrollBy({ left: cardWidth, behavior: 'smooth' });
+    }
+  }, 4000);
 }
+
+function stopFeaturedAutoScroll() {
+  if (featuredAutoScrollTimer) {
+    clearInterval(featuredAutoScrollTimer);
+    featuredAutoScrollTimer = null;
+  }
+}
+
 
 function setupSlideDots(trackId, dotsId) {
   const track = document.getElementById(trackId);
@@ -1500,10 +1529,23 @@ async function loadFeatured() {
     }
     track.innerHTML = state.featuredProperties.map(p => renderSlideCard(p, false)).join('');
     setupSlideDots('featuredSlideTrack', 'featuredSlideDots');
+startFeaturedAutoScroll();
   } catch (e) {
     track.innerHTML = '<div class="empty" style="flex:0 0 100%; padding:30px 20px;"><div class="empty-icon">⚠️</div><div style="font-size:13px;">Failed to load</div></div>';
   }
 }
+// Pause auto-scroll when user touches the carousel
+document.addEventListener('touchstart', (e) => {
+  const track = document.getElementById('featuredSlideTrack');
+  if (track && track.contains(e.target)) {
+    stopFeaturedAutoScroll();
+  }
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+  setTimeout(() => { startFeaturedAutoScroll(); }, 8000);
+}, { passive: true });
+
 
 async function loadProperties() {
   const grid = document.getElementById('propertiesGrid');
