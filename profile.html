@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - HouseHunt Kenya</title>
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png">
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --accent: #1a6b3c;
+    --accent-dark: #14532d;
+    --accent-light: #e8f5e9;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --border-dark: #d1d5db;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 40px;
+  }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 16px; }
+
+  .topbar {
+    background: white;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky; top: 0; z-index: 50;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .back-btn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text);
+    padding: 4px 8px;
+    text-decoration: none;
+  }
+  .topbar-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .profile-header {
+    background: white;
+    padding: 32px 20px 24px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .profile-photo-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 14px;
+  }
+  .profile-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--bg);
+    border: 4px solid white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    display: block;
+  }
+  .verified-badge {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    border: 3px solid white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 900;
+  }
+  .verified-badge.show { display: flex; }
+
+  .profile-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .profile-name .tick {
+    color: var(--accent);
+    font-size: 18px;
+  }.status-section {
+  background: white;
+  padding: 18px 0 22px;
+  margin-bottom: 16px;
+}
+.status-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 0 16px;
+  margin-bottom: 12px;
+}
+.status-row {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 0 16px;
+  scrollbar-width: none;
+}
+.status-row::-webkit-scrollbar { display: none; }
+
+.status-circle-wrap {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
+  width: 74px;
+}
+.status-ring {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #1a6b3c, #22c55e, #1a6b3c);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+.status-ring.seen {
+  background: var(--border-dark);
+}
+.status-circle-wrap:hover .status-ring { transform: scale(1.05); }
+.status-circle-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: white;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.status-circle-inner img,
+.status-circle-inner video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.status-circle-inner.text-preview {
+  background: linear-gradient(135deg, #1a6b3c, #14532d);
+  color: white;
+  font-size: 22px;
+  font-weight: 900;
+}
+.status-circle-label {
+  font-size: 10.5px;
+  color: var(--text);
+  font-weight: 700;
+  margin-top: 6px;
+  max-width: 74px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.status-empty {
+  padding: 30px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.status-empty .icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+}
+.spinner {
+  width: 28px; height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 10px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }  .story-viewer {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 9999;
+    display: none;
+    flex-direction: column;
+  }
+  .story-viewer.show { display: flex; }
+
+  .story-progress-row {
+    display: flex;
+    gap: 4px;
+    padding: 12px 12px 0;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+  }
+  .story-progress-bar {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .story-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: white;
+    border-radius: 3px;
+  }
+  .story-progress-fill.filled { width: 100%; }
+
+  .story-topbar {
+    position: absolute;
+    top: 24px; left: 0; right: 0;
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+  }
+  .story-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+  }
+  .story-user img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+  }
+  .story-user-name {
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .story-close {
+    background: rgba(0,0,0,0.4);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .story-content {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .story-content img,
+  .story-content video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .story-text-content {
+    background: linear-gradient(135deg, #1a6b3c, #14532d);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    color: white;
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .story-tap-left,
+  .story-tap-right {
+    position: absolute;
+    top: 0;
+    bottom: 80px;
+    width: 40%;
+    z-index: 5;
+    cursor: pointer;
+  }
+  .story-tap-left { left: 0; }
+  .story-tap-right { right: 0; }
+
+  .story-caption {
+    position: absolute;
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+    z-index: 10;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    padding: 30px 16px 16px;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .story-property-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: white;
+    color: #111827;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body><div class="topbar">
+  <a href="/" class="back-btn">←</a>
+  <div class="topbar-title">Profile</div>
+</div>
+
+<div class="profile-header">
+  <div class="profile-photo-wrap">
+    <img id="profilePhoto" class="profile-photo" 
+         src="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png" alt="Profile">
+    <div class="verified-badge" id="verifiedBadge">✓</div>
+  </div>
+  <div class="profile-name" id="profileName">
+    Delta Property Agency
+    <span class="tick" id="nameTick" style="display:none;">✓</span>
+  </div>
+</div>
+
+<div class="status-section">
+  <div class="status-section-title">📸 Status</div>
+  <div class="status-row" id="statusRow">
+    <div class="loading" style="padding:20px;width:100%;">
+      <div class="spinner"></div>
+      <div style="font-size:12px;">Loading statuses...</div>
+    </div>
+  </div>
+</div><div class="story-viewer" id="storyViewer">
+  <div class="story-progress-row" id="storyProgressRow"></div>
+  
+  <div class="story-topbar">
+    <div class="story-user">
+      <img id="storyUserPhoto" src="https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png" alt="">
+      <div class="story-user-name" id="storyUserName">Delta Property Agency</div>
+    </div>
+    <button class="story-close" onclick="closeStory()">✕</button>
+  </div>
+
+  <div class="story-content" id="storyContent"></div>
+
+  <div class="story-tap-left" onclick="prevStory()"></div>
+  <div class="story-tap-right" onclick="nextStory()"></div>
+
+  <div class="story-caption" id="storyCaption" style="display:none;">
+    <div id="storyCaptionText"></div>
+    <div id="storyCaptionBtn"></div>
+  </div>
+</div><script>
+const API_BASE = 'https://house-hunt-server.onrender.com';
+
+let state = {
+  statuses: [],
+  currentIndex: 0,
+  autoAdvanceTimer: null,
+  progressInterval: null,
+  profile: {
+    photo_url: 'https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png',
+    display_name: 'Delta Property Agency',
+    verified: false
+  }
+};
+
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function getDeviceId() {
+  let id = localStorage.getItem('hh_device_id');
+  if (!id) {
+    id = 'dev_' + Math.random().toString(36).substr(2, 12) + Date.now().toString(36);
+    localStorage.setItem('hh_device_id', id);
+  }
+  return id;
+}
+
+async function loadProfile() {
+  try {
+    const res = await fetch(API_BASE + '/api/profile');
+    const data = await res.json();
+    if (data.profile) {
+      state.profile = data.profile;
+      document.getElementById('profilePhoto').src = state.profile.photo_url;
+      document.getElementById('storyUserPhoto').src = state.profile.photo_url;
+      document.getElementById('profileName').innerHTML = escapeHtml(state.profile.display_name) + 
+        (state.profile.verified ? ' <span class="tick">✓</span>' : '');
+      document.getElementById('storyUserName').textContent = state.profile.display_name;
+      if (state.profile.verified) {
+        document.getElementById('verifiedBadge').classList.add('show');
+      }
+    }
+  } catch (e) {
+    console.log('Profile load failed:', e.message);
+  }
+}
+
+async function loadStatuses() {
+  const row = document.getElementById('statusRow');
+  try {
+    const res = await fetch(API_BASE + '/api/statuses');
+    const data = await res.json();
+    state.statuses = data.statuses || [];
+
+    if (state.statuses.length === 0) {
+      row.innerHTML = '<div class="status-empty" style="width:100%;"><div class="icon">📸</div>No statuses yet</div>';
+      return;
+    }
+
+    const seenList = JSON.parse(localStorage.getItem('hh_seen_statuses') || '[]');
+
+    row.innerHTML = state.statuses.map((s, i) => {
+      let inner = '';
+      if (s.type === 'photo' || s.type === 'property') {
+        const img = s.media_url || (s.property_data && s.property_data.image) || 'https://res.cloudinary.com/yvzp2mhd/image/upload/v1791334545/deepseek_20261007_09b360.png';
+        inner = '<img src="' + img + '" alt="">';
+      } else if (s.type === 'video') {
+        inner = '<video src="' + (s.media_url || '') + '" muted></video>';
+      } else {
+        inner = '<div class="status-circle-inner text-preview">📝</div>';
+      }
+      const isSeen = seenList.includes(s.id);
+      const isText = s.type === 'text';
+      return '<div class="status-circle-wrap" onclick="openStory(' + i + ')">' +
+        '<div class="status-ring' + (isSeen ? ' seen' : '') + '">' +
+          (isText ? '<div class="status-circle-inner text-preview">📝</div>' : '<div class="status-circle-inner">' + inner + '</div>') +
+        '</div>' +
+        '<div class="status-circle-label">' + escapeHtml(s.caption) + '</div>' +
+      '</div>';
+    }).join('');
+
+  } catch (e) {
+    row.innerHTML = '<div class="status-empty" style="width:100%;"><div class="icon">⚠️</div>Failed to load</div>';
+  }
+}
+
+function markStatusSeen(id) {
+  let seen = JSON.parse(localStorage.getItem('hh_seen_statuses') || '[]');
+  if (!seen.includes(id)) {
+    seen.push(id);
+    localStorage.setItem('hh_seen_statuses', JSON.stringify(seen));
+  }
+}
+
+function openStory(index) {
+  if (index < 0 || index >= state.statuses.length) return;
+  state.currentIndex = index;
+  const status = state.statuses[index];
+
+  document.getElementById('storyViewer').classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  renderProgressBars();
+  renderStoryContent(status);
+
+  markStatusSeen(status.id);
+  recordView(status.id);
+
+  startAutoAdvance(status);
+}
+
+function renderProgressBars() {
+  const row = document.getElementById('storyProgressRow');
+  row.innerHTML = state.statuses.map((_, i) => {
+    let fillClass = '';
+    if (i < state.currentIndex) fillClass = 'filled';
+    return '<div class="story-progress-bar"><div class="story-progress-fill ' + fillClass + '" id="progFill-' + i + '"></div></div>';
+  }).join('');
+}
+
+function renderStoryContent(status) {
+  const content = document.getElementById('storyContent');
+  const caption = document.getElementById('storyCaption');
+  const captionText = document.getElementById('storyCaptionText');
+  const captionBtn = document.getElementById('storyCaptionBtn');
+
+  if (status.type === 'photo' || status.type === 'property') {
+    const img = status.media_url || (status.property_data && status.property_data.image) || '';
+    content.innerHTML = '<img src="' + img + '" alt="">';
+  } else if (status.type === 'video') {
+    content.innerHTML = '<video src="' + (status.media_url || '') + '" autoplay muted playsinline></video>';
+  } else {
+    content.innerHTML = '<div class="story-text-content">' + escapeHtml(status.text_content || '') + '</div>';
+  }
+
+  captionText.textContent = status.caption;
+  caption.style.display = 'block';
+
+  if (status.type === 'property' && status.property_data) {
+    captionBtn.innerHTML = '<a href="/?property=' + status.property_data.id + '" class="story-property-btn">View Property →</a>';
+  } else {
+    captionBtn.innerHTML = '';
+  }
+}
+
+function startAutoAdvance(status) {
+  clearTimers();
+  let duration = 5000;
+  if (status.type === 'video') duration = 30000;
+  if (status.type === 'text') duration = 5000;
+
+  const fillEl = document.getElementById('progFill-' + state.currentIndex);
+  if (fillEl) {
+    fillEl.style.transition = 'none';
+    fillEl.style.width = '0%';
+    setTimeout(() => {
+      fillEl.style.transition = 'width ' + duration + 'ms linear';
+      fillEl.style.width = '100%';
+    }, 50);
+  }
+
+  state.autoAdvanceTimer = setTimeout(() => { nextStory(); }, duration);
+}
+
+function clearTimers() {
+  if (state.autoAdvanceTimer) { clearTimeout(state.autoAdvanceTimer); state.autoAdvanceTimer = null; }
+  if (state.progressInterval) { clearInterval(state.progressInterval); state.progressInterval = null; }
+}
+
+function nextStory() {
+  if (state.currentIndex < state.statuses.length - 1) {
+    openStory(state.currentIndex + 1);
+  } else {
+    closeStory();
+  }
+}
+
+function prevStory() {
+  if (state.currentIndex > 0) {
+    openStory(state.currentIndex - 1);
+  }
+}
+
+function closeStory() {
+  clearTimers();
+  document.getElementById('storyViewer').classList.remove('show');
+  document.body.style.overflow = '';
+  document.getElementById('storyContent').innerHTML = '';
+  loadStatuses();
+}
+
+async function recordView(statusId) {
+  try {
+    await fetch(API_BASE + '/api/statuses/' + statusId + '/view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ device_id: getDeviceId() })
+    });
+  } catch (e) {}
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadProfile();
+  loadStatuses();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeStory();
+  if (e.key === 'ArrowRight') nextStory();
+  if (e.key === 'ArrowLeft') prevStory();
+});
+</script>
+</body>
+</html>
