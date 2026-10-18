@@ -1810,7 +1810,6 @@ function renderPropertyCard(p) {
       <div class="property-info">
         <div class="property-price">Ksh ${Number(p.price).toLocaleString()}${priceSuffix}</div>
         <div class="property-title">${escapeHtml(p.title)}</div>
-        <div class="property-loc"><span class="pin">📍</span> ${escapeHtml(p.location)}</div>
         <div class="property-specs">
           <span>🛏️ ${bedLabel}</span>
           <span>🚿 ${p.bathrooms} <span class="dim">ba</span></span>
@@ -2039,7 +2038,6 @@ function openPropertyView(propertyId) {
   const priceSuffix = p.type === 'rent' ? ' <span class="per">/mo</span>' : '';
   document.getElementById('pvPrice').innerHTML = 'Ksh ' + Number(p.price).toLocaleString() + priceSuffix;
   document.getElementById('pvTitle').textContent = p.title;
-  document.getElementById('pvLocation').innerHTML = '<span class="pin">📍</span> ' + escapeHtml(p.location);
   document.getElementById('pvBeds').textContent = p.unitLabel || ((p.bedrooms === 0 || p.bedrooms === '0') ? 'Studio' : p.bedrooms);
   document.getElementById('pvBaths').textContent = p.bathrooms;
   document.getElementById('pvTypeLabel').textContent = p.type === 'sale' ? 'Sale' : 'Rent';
