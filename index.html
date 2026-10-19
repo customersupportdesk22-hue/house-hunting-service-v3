@@ -615,7 +615,7 @@ display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 
 
   @media (min-width: 640px) {
     .container { padding: 0 16px; }
-    .grid, .featured-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid, .featured-grid { grid-template-columns: 1fr; }
     .property-title { font-size: 13.5px; min-height: 37px; }
     .property-price { font-size: 17px; }
     .hero h1 { font-size: 32px; }
@@ -631,8 +631,8 @@ display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 
     .pv-price { font-size: 30px; }
   }
   @media (min-width: 1024px) {
-    .grid, .featured-grid { grid-template-columns: repeat(4, 1fr); }
-  }
+    .grid, .featured-grid { grid-template-columns: 1fr; }
+}
 .profile-btn {
   display: none !important;
   width: 42px; height: 42px; border-radius: 50%;
